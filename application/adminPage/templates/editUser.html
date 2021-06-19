@@ -1,0 +1,720 @@
+{% extends 'layoutAdmin.html' %}
+
+{% block navig %}
+	<a class = "active" href="" style="float: right;"> Sveiki {{username}}!</a>
+	<a class = "active" href="{{ url_for('auth_bp.logout') }}" style="float: right;"><i class="fa fa-times"></i> Iziet</a>
+{% endblock %}
+
+{% block content %}
+<link href="https://unpkg.com/tabulator-tables@4.8.4/dist/css/tabulator.min.css" rel="stylesheet">
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.8.4/dist/js/tabulator.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script type="text/javascript" src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
+
+<p style="margin-top:15px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">Lietotājs: {{username}}</p>
+{% if database == None %}
+    <p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">None (User have no attached database, it must be to make any interaction)</p>
+{% else %}
+    <p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">Datubāze: {{database}}</p>
+{% endif %}
+<p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">Izveidots: {{created}}</p>
+<p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">Pēdējo reizi aktīvs: {{lastLogin}}</p>
+<p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">{{data}}</p>
+<fieldset class="inlineParent" style="margin-top:5px;">
+	<legend>Izveidot tabulu:</legend>
+	<fieldset>
+		<legend>Manuālā datu ievade:</legend>
+		<input type="text" id="colName" name="fname" placeholder="Kolonnas nosaukums" style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;">
+		<select id="datatypeDropdwn" required>
+			<option value="">Izvēlēties datu tipu</option>
+			<option value="text">TEXT</option>
+			<option value="integer">INTEGER</option>
+			<option value="real">REAL(float type)</option>
+		</select>
+		<button id="reactivity-add">Pievienot kolonnu</button>
+		<button id="reactivity-delete">Nodzēst izvēlēto rindu</button>
+		
+	</fieldset>
+	<fieldset>
+	<legend>Virsraksti no csv faila:</legend>
+	<input type="file" name="File Upload" id="txtFileUpload1" accept=".csv"/>
+	</fieldset>
+	<br>
+<input type="text" id="tableName" placeholder="Tabulas nosaukums" style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;">
+<button id="createTable">Izveidot tabulu</button>
+<br>
+<div id='createNewTable' style="margin-top:10px; width:90%; display:block; margin-left: auto; margin-right: auto; max-width: 1200px;"></div>
+</fieldset>
+<br>
+<fieldset class="inlineParent" style="margin-top:5px;">
+	<legend>Rediģēt lietotāja tabulas datus:</legend>
+	<select id="usrTable" required>
+		<option value="">Izvēlēties tabulu</option>
+		{% if database != None %}
+			{% for item in databaseTables %}
+			<option value={{item}}>{{item}}</option>
+			{% endfor %}
+		{% else %}
+			<option value=noDB>Nav pievienota datubāze</option>
+		{% endif %}
+	</select>
+	<button id="uploadData">Augšuplādēt datus</button>
+	<button id="requestData">Pieprasīt datus</button>
+	<button id="selectedTableDelete" title="Izvēloties tabulu tā tiks izdzēsta, ieskaitot '_graphics'">Dzēst tabulu</button>
+	<br>
+	<input type="file" name="File Upload" id="txtFileUpload2" accept=".csv"/>
+	<input type="text" id="urlToCsv" placeholder="url uz csv failu" style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;">
+	<button id="requestFromUrl">Lejuplādēt no url</button>
+	<br>
+	<div id='userDataPreview' style="margin-top:10px; width:90%; display:block; margin-left: auto; margin-right: auto; max-width: 1200px;"></div>
+</fieldset>
+<br>
+<fieldset style="margin-top:5px;">
+	<legend>Piešķirt lietotāja tabulai url:</legend>
+	<select id="usrTableUrl" required>
+			<option value="">Izvēlēties tabulu</option>
+			{% if database != None %}
+				{% for item in databaseTables %}
+				<option value={{item}}>{{item}}</option>
+				{% endfor %}
+			{% else %}
+				<option value=noDB>Nav pievienota datubāze</option>
+			{% endif %}
+	</select>
+	<input type="text" id="urlForTable" placeholder="Tabulas url" style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;">
+	<button id="addUrl">Pievienot url</button>
+	<button id="delUrl">Nodzēst atzīmēto</button>
+	<button id="updtTables">Atjaunot tabulas</button>
+	<br>
+	<p>Currently url assigned for {{tableDataUrl[0]}} tables of {{tableDataUrl[1]}}</p> 
+	<div id='userUrlPreview' style="margin-top:10px; width:90%; display:block; margin-left: auto; margin-right: auto; max-width: 1200px;"></div>
+</fieldset>
+<p> . </p>
+<p> . </p>
+
+<script>
+var colName = document.getElementById("colName");
+var dataType = document.getElementById("datatypeDropdwn");
+//Create Date Editor
+var dateEditor = function(cell, onRendered, success, cancel){
+    //cell - the cell component for the editable cell
+    //onRendered - function to call when the editor has been rendered
+    //success - function to call to pass the successfuly updated value to Tabulator
+    //cancel - function to call to abort the edit and return to a normal cell
+
+    //create and style input
+    var cellValue = moment(cell.getValue(), "DD/MM/YYYY").format("YYYY-MM-DD"),
+    input = document.createElement("input");
+
+    input.setAttribute("type", "date");
+
+    input.style.padding = "4px";
+    input.style.width = "100%";
+    input.style.boxSizing = "border-box";
+
+    input.value = cellValue;
+
+    onRendered(function(){
+        input.focus();
+        input.style.height = "100%";
+    });
+
+    function onChange(){
+        if(input.value != cellValue){
+            success(moment(input.value, "YYYY-MM-DD").format("DD/MM/YYYY"));
+        }else{
+            cancel();
+        }
+    }
+
+    //submit new value on blur or change
+    input.addEventListener("blur", onChange);
+
+    //submit new value on enter
+    input.addEventListener("keydown", function(e){
+        if(e.keyCode == 13){
+            onChange();
+        }
+
+        if(e.keyCode == 27){
+            cancel();
+        }
+    });
+
+    return input;
+};
+
+var tabledata2 = []
+
+//Build Tabulator
+var table = new Tabulator("#createNewTable", {
+    height:"311px",
+    layout:"fitColumns",
+	selectable:true,
+	selectableRangeMode:"click",
+	//movableRows: true, //enable user movable rows
+	history:true, //allow undo and redo actions on cells
+    //reactiveData:true, //turn on data reactivity
+    data:tabledata2,
+    columns:[
+		{rowHandle:true, formatter:"handle", headerSort:false, frozen:true, width:30, minWidth:30},
+		{title:"ID", field:"id", width:50},
+		{title:"Column names", field:"columnName",editor:"input"},
+		{title:"Datatypes", field:"datatype", editor:"select", editorParams:{values:["text", "integer", "real"]}},
+		{title:"Data example", field:"exampleData"}
+		
+],
+});
+
+
+//table for usr data preview and upload data preview
+var table2 = new Tabulator("#userDataPreview", {
+    height:"311px",
+    layout:"fitColumns",
+	//virtualDomHoz:true,
+	selectable:true,
+	selectableRangeMode:"click",
+	//movableRows: true, //enable user movable rows
+	history:true, //allow undo and redo actions on cells
+    //reactiveData:true, //turn on data reactivity
+    data:tabledata2,
+});
+
+var table3 = new Tabulator("#userUrlPreview", {
+    height:"311px",
+    layout:"fitColumns",
+	//virtualDomHoz:true,
+	selectable:true,
+	selectableRangeMode:"click",
+	//movableRows: true, //enable user movable rows
+	history:true, //allow undo and redo actions on cells
+    //reactiveData:true, //turn on data reactivity
+    data:{{urlDataExport|tojson}},
+	columns:[
+	{title:"Table name", field:"tableName",width:200, minWidth:200},
+	{title:"Url", field:"webUrl"},
+	],
+});
+
+ /// function updateTableDataFromUrl(){//----------<<<<<<--------------------<<<<<<<------------------------<<<<<<<<<----------------------japabeidz------------------
+	document.getElementById("updtTables").addEventListener("click", function(){
+	//get urls
+	//var tableUrls = table3.getData();
+	//console.log(tableUrls);
+	$.ajax({
+      type: "POST",
+      contentType: "application/json; charset=utf-8",
+      url: "/editUserUpdateTableUrl?username=" + '{{username}}',
+      //data: JSON.stringify(table2.getData()),
+      success: function (data) {
+	   alert(data['info']);
+	   console.log(data['info'])
+	   //reloadPage();
+      },
+      dataType: "json"//datatype ajax are expecting from response, if 'text' then it will be as string not as dictionary
+    });
+	
+  });
+
+document.getElementById("addUrl").addEventListener("click", function(){
+	if (usrTableUrl.value == ""){alert('Please select table.'); return;}
+	if (urlForTable.value == ""){alert('There are no url specified.'); return;}
+	$.ajax({
+      type: "POST",
+      contentType: "application/json; charset=utf-8",
+      url: "/editUserUpdateTableUrl?username=" + '{{username}}' + '&table=' + String(usrTableUrl.value) + '&url=' + String(urlForTable.value),
+      data: JSON.stringify(table2.getData()),
+      success: function (data) {
+	   //alert(data['info']);
+	   console.log(data['info'])
+	   reloadPage();
+      },
+      dataType: "json"//datatype ajax are expecting from response, if 'text' then it will be as string not as dictionary
+    });
+  });
+  
+ document.getElementById("delUrl").addEventListener("click", function(){
+	var selectedRows = table3.getSelectedRows();
+	//console.log(selectedRows);
+	if (Object.keys(selectedRows).length === 0) {//check if any rows is selected
+		alert('Select at least one row to delete it');
+		return;
+		}
+	var tableNames = [];
+	for(var i=0;i<selectedRows.length;i++)
+		{
+		var currentData = selectedRows[i].getData();
+		tableNames.push(currentData['tableName']);
+		}
+	$.ajax({
+      type: "POST",
+      contentType: "application/json; charset=utf-8",
+      url: "/editUserUpdateTableUrl?targetDatabase=" + '{{database}}',
+      data: JSON.stringify(tableNames),
+      success: function (data) {
+	   //alert(data['info']);
+	   console.log(data['info'])
+	   reloadPage();
+      },
+      dataType: "json"//datatype ajax are expecting from response, if 'text' then it will be as string not as dictionary
+    });
+  });
+
+
+//add column 
+document.getElementById("reactivity-add").addEventListener("click", function(){
+	var string = colName.value;
+	if ((!!string) && string != " "){
+		if (string[0] != " "){
+			//table.addColumn({title:colName.value, field:colName.value}, false, "name").then(function//})
+			var rowIndex = table.getDataCount();
+			
+			table.addRow({id:rowIndex, columnName:colName.value, datatype:dataType.value}, false);
+			
+		}
+		else if (string[0] == " "){alert('Column name starts with space character!');}
+		}
+	else{
+		if (!string){alert('Column name field is empty!');}
+		else if (string == " ") {alert('Column name has only space character!');}
+	}
+});
+
+//remove selected row from table
+document.getElementById("reactivity-delete").addEventListener("click", function(){
+	//console.log( table.getSelectedData());
+	var selectedRows = table.getSelectedRows();
+	for(var i=0;i<selectedRows.length;i++)
+		{
+		table.deleteRow(selectedRows[i]);
+		}
+	rewriteID();
+});
+
+function rewriteID(){
+	var data = table.getData();
+	for (var i=0; i<data.length; i++){
+		data[i]['id'] = i;
+	}
+	table.clearData();
+	table.addData(data);
+}
+
+function checkForDuplicates(array) {
+  let valuesAlreadySeen = []
+
+  for (let i = 0; i < array.length; i++) {
+    let value = array[i]
+    if (valuesAlreadySeen.indexOf(value) !== -1) {
+      return true
+    }
+    valuesAlreadySeen.push(value)
+  }
+  return false
+}
+
+function createTable() {
+  //check if user have database
+  database = '{{database}}'
+  if (database == 'None'){alert('This user has no database attached, no interaction can not be made until database is present!');return;}
+  //check data validity
+  const data = table.getData();
+  if (Object.keys(data).length == 0){alert('Can not create table with no columns!');return;}
+  for (var i=0; i<data.length; i++){
+	var datatype = data[i]['datatype'];
+	var colName = data[i]['columnName'];
+	//check column name validity
+	if ((!!colName) && colName != " "){
+		if (colName[0] != " "){
+			//if true then just skip this statement
+		}
+		else if (colName[0] == " "){alert('Column name with id '+ i +' starts with space character, please delete it!'); return;}
+		}
+	else{
+		if (!colName){alert('Column name field with id '+ i +' is empty!');return;}
+		else if (colName == " ") {alert('Column name with id '+ i +' has only space character!');return;}
+	}
+	//check for '(' & ')' symbols in colNames
+	if (colName.includes(")") || colName.includes("(")) {alert("Column name with id: "+ i + " include special characters '(' or ')', these must be excluded from column names.");return;}
+	//check for carriage return character in column name ('\r')
+	if (colName.indexOf("\r") >= 0) {
+		//colName.replace(/[\n\r]/g, '');
+		colName = colName.slice(0, colName.indexOf("\r"));//just cut of end of string, this method at least worked, replacement with '' failed
+		data[i]['columnName'] = colName;
+	}
+	//check datatype validity
+	if (datatype == ""){alert('Column with id '+ i +' has no datatype specified!');return;}
+  }
+  //check for dublicate column names
+  var namesToCheck = [];
+  for (var loop in data){
+    namesToCheck.push(data[loop]['columnName']);
+	}
+  //var values = Object.keys(data).map(function(key){return dictionary[key];})
+  if (checkForDuplicates(namesToCheck) == true){alert('There are two or more exact column names, these cant be same.');return;}
+  //additionalCharacterCheck(tableName.value);
+  if (tableName.value == "") {alert('Please add table name!');return;}
+  else if (/\s/.test(tableName.value) == true){alert('Table name has whitespaces!');return;}
+  requestNewTable(data);
+  //alert(infoRecieved);
+  
+}
+
+function addDataToArray(data){
+	
+	data.push('{{username}}');//add username at end of the array
+	data.push(tableName.value);//add tablename at end of the array
+	return data;
+}
+
+function requestNewTable(data){
+	  //var dataToReturn = "";
+	  $.ajax({
+      type: "POST",
+      contentType: "application/json; charset=utf-8",
+      url: "/editUserCreateTable",
+      data: JSON.stringify(addDataToArray(data)),
+		success: function (data) {
+	   alert(data['info']);
+	   //dataToReturn = data['info']
+	   if (data['info'] == "Table with this name already exists!"){return;}
+	   reloadPage();
+      },
+	  dataType: "json"
+    });
+	//return dataToReturn;
+}
+
+function reloadPage(){
+	window.location.reload(false); 
+}
+
+function isInt(n){
+    return Number(n) === n && n % 1 === 0;
+}
+
+function isFloat(n){
+    return Number(n) === n && n % 1 !== 0;
+}
+
+function pushDataTabulator(data){
+	var rowIndex = table.getDataCount();
+	var colHeaders = data[0];
+	var frstLine = data[1];
+	console.log(frstLine);
+	for (var i=0; i<colHeaders.length; i++){
+			var dataType = "text";
+			if (isNaN(frstLine[i]) == false){//check if is number
+				//console.log(isNaN(isDate));
+				if (isFloat(parseFloat(frstLine[i]))  == true){dataType = "real";}
+				else if (isInt(parseInt(frstLine[i])) == true){dataType = "integer";}
+				
+			}
+            table.addRow({id:rowIndex, columnName:colHeaders[i], datatype:dataType, exampleData:frstLine[i]}, false);
+			rowIndex += 1;
+          }
+}
+
+  function readSingleFile(evt) {
+    var f = evt.target.files[0];
+    if (f) {
+      var r = new FileReader();
+      r.onload = function(e) {
+          var contents = e.target.result;
+          //document.write("File Uploaded! <br />" + "name: " + f.name + "<br />" + "content: " + contents + "<br />" + "type: " + f.type + "<br />" + "size: " + f.size + " bytes <br />");
+          var lines = contents.split("\n"), headers = [], frstLine = [], output = [];
+		  var frstLineData = lines[1].split(",");
+		  var colNames = lines[0].split(",");
+          for (var i=0; i<colNames.length; i++){
+            headers.push(colNames[i]);
+			frstLine.push(frstLineData[i]);
+          }
+		  output.push(headers);
+		  output.push(frstLine);
+		  pushDataTabulator(output);
+		  //console.log(output);
+     }
+      r.readAsText(f);
+      //document.write(output);
+    } else { 
+      alert("Failed to load file");
+    }
+  }
+  
+  function readImportFile(evt) {
+    var f = evt.target.files[0];
+    if (f) {
+      var r = new FileReader();
+      r.onload = function(e) {
+          var contents = e.target.result;
+          var lines = contents.split("\n"), headers = [], frstLine = [], output = [];
+		  //check if file contain headers
+		  headersIsPresent = false;
+		  var frstLineData = lines[0].split(",");
+		  var scndLineData = lines[1].split(",");
+		  for (var i=0; i<frstLineData.length; i++){
+            var frstLine = "text";
+			var scndLine = "text";
+			//check frst line
+			if (isNaN(frstLineData[i]) == false){//check if is number
+				if (isFloat(parseFloat(frstLineData[i]))  == true){frstLine = "real";}
+				else if (isInt(parseInt(frstLineData[i])) == true){frstLine = "integer";}
+			}
+			if (isNaN(scndLineData[i]) == false){//check if is number
+				if (isFloat(parseFloat(scndLineData[i]))  == true){scndLine = "real";}
+				else if (isInt(parseInt(scndLineData[i])) == true){scndLine = "integer";}
+			}
+			if (frstLine != scndLine){headersIsPresent = true; break;}	
+          }
+		  
+		  //define column names
+		  var colNamesExport = [];
+		  if (headersIsPresent == true){
+			  var colNames = lines[0].split(",");
+			   for (var i=0; i<colNames.length; i++){
+					colName = colNames[i];
+					//check for carriage return character in column name ('\r')
+					if (colName.indexOf("\r") >= 0) {
+						//colName.replace(/[\n\r]/g, '');
+						colName = colName.slice(0, colName.indexOf("\r"));//just cut of end of string, this method at least worked, replacement with '' failed
+					}
+				
+					colNamesExport.push({title:colName, field:colName, width:100});
+				
+			   }
+			   table2.setColumns(colNamesExport);
+			   lines.shift();//delete first row for easier data manipulation later
+			}
+			else{
+				var colNames = lines[0].split(",");
+				for (var i=0; i<colNames.length; i++){
+				colNamesExport.push({title:('col_'+i), field:'col_'+i});
+			   }
+			   table2.setColumns(colNamesExport);
+			}
+			
+			//define data
+			dataExport = [];
+			for (var i=0; i<(lines.length); i++){
+				lineData = {};
+				var currentData = lines[i].split(",");
+				var pushLine = true;
+				for (var loop=0; loop<(colNamesExport.length); loop++){
+					console.log(currentData[loop]);
+					if (currentData[loop] === void 0){pushLine=false; break;}//if there is undefined case then break out and dont append this line 
+					if (currentData[loop].indexOf('"') >= 0){//check if string contain double qoutes '"' and remove them
+						//var newString = currentData[loop].replace('"','');
+						var newString = currentData[loop].replace(/["]/g,'');
+						Object.assign(lineData, {[colNamesExport[loop]['field']]: newString});
+					}
+					else {Object.assign(lineData, {[colNamesExport[loop]['field']]: currentData[loop]});}//assign new value pair to dictionary
+					//lineData.colNamesExport[loop]['field'] = currentData[loop];
+					//if (loop == 6){console.log(currentData[loop]);}
+				}
+				if (pushLine == true) {dataExport.push(lineData);}
+			 }
+			table2.setData(dataExport).then(function(){console.log('data succesfully loaded')});
+     }
+      r.readAsText(f);
+      //document.write(output);
+    } else { 
+      alert("Failed to load file");
+    }
+  }
+  
+  function uploadDataToServer(){
+	if (usrTable.value == ""){alert('Please select table.'); return;}
+	$.ajax({
+      type: "POST",
+      contentType: "application/json; charset=utf-8",
+      url: "/editUserUpdateTable?username=" + '{{username}}' + '&table=' + String(usrTable.value),
+      data: JSON.stringify(table2.getData()),
+      success: function (data) {
+	   alert(data['info']);
+      },
+      dataType: "json"//datatype ajax are expecting from response, if 'text' then it will be as string not as dictionary
+    });
+  }
+  
+  function requestDataFromServer(){
+	if (usrTable.value == ""){//check if user selected any table
+		alert('Select table to request data!');
+		return;
+	}
+	
+	$.ajax({
+		url : '/editUserRequestInfo?username=' + '{{username}}' + '&table=' + String(usrTable.value) + '&recordAmount=' + '50',
+		success: function(data) {
+			var recievedData = data['info'];
+			var columnNames = data['columnNames'];
+			console.log(data);
+			//define data
+			dataExport = [];
+			for (var i=0; i<(recievedData.length); i++){
+				lineData = {};
+				var currentData = recievedData[i];
+				for (var loop=0; loop<(columnNames.length); loop++){
+					Object.assign(lineData, {[columnNames[loop]]: currentData[loop]});//assign new value pair to dictionary
+					//lineData.colNamesExport[loop]['field'] = currentData[loop];
+					//if (loop == 6){console.log(currentData[loop]);}
+				}
+				dataExport.push(lineData);
+			 }
+			 //var colNames = lines[0].split(",");
+			 var colNamesExport = [];
+				for (var i=0; i<columnNames.length; i++){
+				colNamesExport.push({title:(columnNames[i]), field:columnNames[i], editor:"input", width:100});
+			   }
+			 table2.setColumns(colNamesExport);
+			table2.setData(dataExport).then(function(){
+			if(recievedData === undefined || recievedData.length == 0){alert('Table is empty');}
+			//console.log('data succesfully loaded')
+			});
+			
+		}
+	});
+  }
+
+  function requestDataFromUrl(){
+	var usrSpecifiedUrl = urlToCsv.value;
+	//var dataToExport = {}
+	$.ajax({
+      type: "POST",
+      contentType: "application/json; charset=utf-8",
+      url: "/editUserRequestFromURL",
+      data: JSON.stringify(usrSpecifiedUrl),
+      success: function (data) {
+	   //alert(data['info']);
+	   
+		var recievedData = data['tableData'];
+		var columnNames = data['columnNames'];
+		var colNamesExport = [];
+	   if (!columnNames){
+		console.log('colnames is none');
+			for (var i=0; i<recievedData[0].length; i++){
+			colNamesExport.push({title:('col_'+i), field:'col_'+i});
+		   }
+		   table2.setColumns(colNamesExport);
+		}
+		else{
+			for (var i=0; i<columnNames.length; i++){
+				colName = columnNames[i];
+				//check for carriage return character in column name ('\r')
+				if (colName.indexOf("\r") >= 0) {
+					//colName.replace(/[\n\r]/g, '');
+					colName = colName.slice(0, colName.indexOf("\r"));//just cut of end of string, this method at least worked, replacement with '' failed
+				}
+			
+				colNamesExport.push({title:colName, field:colName, width:100});
+			
+		   }
+		   table2.setColumns(colNamesExport);
+		}
+		dataExport = [];
+		for (var i=0; i<(recievedData.length); i++){
+			lineData = {};
+			var currentData = recievedData[i];
+			for (var loop=0; loop<(colNamesExport.length); loop++){
+				Object.assign(lineData, {[colNamesExport[loop]['field']]: currentData[loop]});//assign new value pair to dictionary
+				//lineData.colNamesExport[loop]['field'] = currentData[loop];
+				//if (loop == 6){console.log(currentData[loop]);}
+			}
+			dataExport.push(lineData);
+		 }
+		table2.setData(dataExport).then(function(){console.log('data succesfully loaded')});
+		
+      },
+      dataType: "json"//datatype ajax are expecting from response, if 'text' then it will be as string not as dictionary
+    });
+  }
+  
+  document.getElementById("selectedTableDelete").addEventListener("click", function(){
+	
+	if (usrTable.value == ""){//check if user selected any table
+		alert('Atlasiet tabulu, lai to dzēstu.');
+		return;
+	}
+	var username = '{{username}}';
+	var database = '{{database}}';
+	var tableName = usrTable.value;
+
+	var question = "Vai vēlaties dzēst sekojošu tabulu: " + String(tableName) + " ?"
+	if (confirm(question)) {
+			$.ajax({
+		  type: "POST",
+		  contentType: "application/json; charset=utf-8",
+		  url: "/editUserDeleteUserData?targetDatabase=" + String(database) +'&username=' + String(username) +'&table=' + String(tableName),
+		  //data: JSON.stringify(tableNames),
+		  success: function (data) {
+		   reloadPage();
+		  },
+		  dataType: "json"//datatype ajax are expecting from response, if 'text' then it will be as string not as dictionary
+		});
+	}
+	
+
+});
+  
+document.getElementById('txtFileUpload1').addEventListener('change', readSingleFile);
+document.getElementById("createTable").addEventListener('click', createTable);//create table btn
+document.getElementById('txtFileUpload2').addEventListener('change', readImportFile);
+document.getElementById("uploadData").addEventListener('click', uploadDataToServer);//upload data to server
+document.getElementById("requestData").addEventListener('click', requestDataFromServer);
+document.getElementById("requestFromUrl").addEventListener('click', requestDataFromUrl);//request data from another website
+
+
+
+</script>
+{% endblock %}
+
+{% block style %}
+	select {
+		font-family:sans-serif; 
+		font-weight:bold; 
+		color: white; 
+		background-color: dodgerblue; 
+		border-radius: 25px; 
+		border: 0px; 
+		padding: 5px 5px 5px 5px;
+	}
+	fieldset{
+		border:5px solid dodgerblue;
+		display:block; 
+		margin-left:auto;
+		margin-right:auto;
+		margin-top:5px;
+		margin-bottom:5px;
+		font-family:sans-serif;
+		font-weight:bold;
+		color: dodgerblue;
+
+	}
+	button {
+		font-family:sans-serif;
+		font-weight:bold; 
+		color: white;
+		background-color: dodgerblue;
+		border-radius: 25px;
+		border: 0px;
+		padding: 5px 5px 5px 5px;
+		margin-top:5px;
+	}
+	textarea {
+	   resize: none;
+	}
+	select {
+	  -webkit-appearance: menulist-button;
+	  color: black;
+	}
+
+	select:invalid {
+	  color: #aaa;
+	}
+	select option { color: black; }
+	select option:first-child{
+	  color: #aaa;
+	}
+	
+
+}
+{% endblock %}

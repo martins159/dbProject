@@ -1,0 +1,16 @@
+.login-signup {
+	text-align:center;
+	font-weight:300;
+	font-size:0.8em;
+	font-family:'Poppins', sans-serif;
+	margin-top:20px;
+
+	a{
+	  color:#5eb9d7;
+	  font-weight:500;
+	}
+}
+p{
+  font-size:18px;
+  color:blue;
+}

@@ -1,0 +1,100 @@
+
+
+
+
+.tables
+.schema		tabulas raksturojums
+.database	patreizeja datubaze kam ir piesledzies
+.fullschema	vesture izveidotajam tabulam un noteikumiem - raksturojums
+.headers on	lai butu kolonnu nosaukumi
+.mode column	lai attelotu datus pa smukam kolonnam
+CREATE TABLE  flaskloginUsers(
+	id INTEGER PRIMARY KEY,
+	username STRING UNIQUE NOT NULL,
+	email TEXT UNIQUE NOT NULL,
+	password STRING NOT NULL,
+	name STRING,
+	created STRING,
+	lastLogin STRING,
+	isAdmin INTEGER
+);
+
+INSERT INTO flaskloginUsers(id ,username  ,email, password, name, created, lastLogin)
+VALUES (1, 'martins', 'golbis3@inbox.lv', 'password1', '', datetime(strftime('%s','now'), 'unixepoch', 'localtime'), '');
+
+
+
+INSERT INTO piemers1_texts ('1') VALUES ('pievienotāVērtība');
+-------------for test -----------------------------------
+
+CREATE TABLE  test(
+	id INTEGER PRIMARY KEY,
+	username STRING UNIQUE NOT NULL
+);
+
+INSERT INTO flaskloginUsers(id ,username)
+VALUES (1, 'testUsr');
+
+
+UPDATE flaskloginUsers SET database = 'user7' WHERE username = 'martins159';
+
+-------------actionLog.db -----------------------------------
+CREATE TABLE userActions (
+	date TEXT,
+	username TEXT,
+	isAdmin INTEGER,
+	databaseName TEXT,
+	tableName TEXT,
+	action TEXT
+);
+
+CREATE TABLE  test( id INTEGER PRIMARY KEY,username STRING UNIQUE NOT NULL);
+CREATE TABLE  test_graphics( id INTEGER PRIMARY KEY,username STRING UNIQUE NOT NULL);
+
+#-------------------------------------date filtering----------------------------------------
+select date from userActions where date(date)>date('2021-03-06');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+subprocess - atļauj no python izsaukt komandas uz konsoli
+
+import subprocess
+subprocess.call(["sqlite3", ".open 'rsinfo.db'", 
+			  ".mode csv", 
+			  ".import 'dataCSV.csv' rsTrade"])
+
+
+---------------------csv inport------------------------------------------
+import sqlite3
+import csv
+
+conn = sqlite3.connect(':memory:')
+
+conn.execute('create table mytable (col1 text, col2 text, col3 text)')
+
+csvReader = csv.reader(open('mydata.csv'), delimiter=',', quotechar='"')
+
+for row in csvReader:
+        conn.execute('insert into mytable (col1, col2, col3) values (?, ?, ?)', row)
+
+cur = conn.cursor()
+cur.execute('select * from mytable')
+print cur.fetchall()

@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <div class="form-wrapper">
+
+    {% for message in get_flashed_messages() %}
+      <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+      </div>
+    {% endfor %}
+    <img src="{{url_for('static', filename = 'pump.png')}}" width="500" height="60" alt="Pump_logo" class="login_img">
+    <form method="POST" action="/login" class="login_form">
+      {{ form.csrf_token }}
+
+      <fieldset class="username">
+        {{ form.username.label }}
+        {{ form.username(placeholder='Lietotājvārds') }}
+        {% if form.username.errors %}
+          <ul class="errors">
+            {% for error in form.username.errors %}
+              <li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </fieldset>
+
+      <fieldset class="password">
+        {{ form.password.label }}
+        {{ form.password(placeholder='Parole') }}
+        {% if form.password.errors %}
+          <ul class="errors">
+            {% for error in form.password.errors %}
+              <li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </fieldset>
+
+	  
+      <div class="submit-button">
+        {{ form.submit }}
+      </div>
+
+    </form>
+  </div>
+{% endblock %}
+
+{% block style %}
+	.login_img{
+	  margin-top: 50px;
+	  display: block;
+	  margin-left: auto;
+	  margin-right: auto;
+	}
+
+	.login_form{
+	  position: relative;
+	  top: 50px;
+	}
+
+	.username{
+	  border: 1px solid transparent;
+	  background-color: white;
+	  padding: 10px;
+	  font-size: 20px;
+	  text-align:center;
+	}
+	.password{
+	  border: 1px solid transparent;
+	  background-color: white;
+	  padding: 10px;
+	  font-size: 20px;
+	  text-align:center;
+	}
+	
+	input {
+	  border: 1px solid transparent;
+	  background-color: #f1f1f1;
+	  padding: 10px;
+	  font-size: 16px;
+	  display: block;
+      margin : 0 auto;
+      border-radius: 25px;
+
+	}
+	.submit-button{
+		text-align:center;
+		border-radius: 25px;
+		transition-duration: 0.4s;
+	}
+
+	.login-signup {
+		text-align:center;
+		font-weight:300;
+		font-size:0.8em;
+		font-family:'Poppins', sans-serif;
+		margin-top:20px;
+
+		a{
+		  color:#5eb9d7;
+		  font-weight:500;
+		}
+	}
+
+
+{% endblock %}

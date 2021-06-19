@@ -1,0 +1,253 @@
+{% extends 'layout.html' %}
+
+{% block headContent %}
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock %}
+
+{% block navig %}
+	<a class = "active" href="" style="float: right;"> Sveiki {{username}}!</a>
+	<a class = "active" href="{{ url_for('auth_bp.logout') }}" style="float: right;"><i class="fa fa-times"></i> Iziet</a>
+{% endblock %}
+
+{% block content %}
+
+<fieldset style="border:5px solid white; display:block; margin-left:auto; margin-right:auto; margin-top:10px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">
+	<legend>Cikla tabulas izvēle:</legend>
+	<select id="filterTable" required style = "margin-top:5px; font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;">
+		<option value="">Izvēlēties cikla tabulu</option>
+		{% for item in tables %}
+		<option value={{item}}>{{item}}</option>
+		{% endfor %}
+	</select>
+	
+	<select id="filterColumns" required style = "margin-top:5px; font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;">
+		<option value="">Izvēlēties kolonnu</option>
+	</select>
+	
+	<select id="filterOperators" required style = "margin-top:5px; font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;">
+		<option value="">Izvēlēties operatoru</option>
+		<option value="=">=</option>
+		<option value=">">></option>
+		<option value="<"><</option>
+	</select>
+	<form class="form-group">
+		<input id="filterValue" type="text" placeholder="Filtrējamā vērtība" class="form-control" style = "margin-top:5px; font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;">
+	</form>
+	<button id="addFilterVal">Pievienot filtru</button>
+	<button id="removeFilterVal">Nodzēst izvēlētos filtrus</button>
+	<br>
+	<button id="requestData">Izvēlēties datus (ar iestatītajiem filtriem)</button>
+	<button id="requestDataLast">Izvēlēties datus (pēdējos 50 ierakstus)</button>
+</fieldset>
+
+<br>
+
+<link href="https://unpkg.com/tabulator-tables@4.8.4/dist/css/tabulator.min.css" rel="stylesheet">
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.8.4/dist/js/tabulator.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+
+<div id='filterDataPreview'></div>
+
+<!-- Importing jquery cdn -  for date button-->
+<link href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css"  rel="Stylesheet"type="text/css" />
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script type="text/javascript"  src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<!-- style  for date button-->
+<style type="text/css">
+	.ui-datepicker-trigger { 
+		
+		position:relative; top:5px ;right:20px ; height:20px
+	}
+</style>
+
+<script>
+//----------------------------------------------date button on input field optional input -------------------------
+$(document).ready(function () {
+            $("#filterValue").datepicker({
+                //showOn: "button",
+				showOn: "button",
+                // Button image stored on local device
+                buttonImage: "/static/calendar.png",    
+                buttonImageOnly: true,
+                dateFormat: "d/m/yy",
+				constrainInput: false
+            });
+        });
+//-----------------------------------------------------------------------------------------------------------------
+var colDatatypes = {};
+
+
+var tabledata = [];
+//table for filter data preview
+var table = new Tabulator("#filterDataPreview", {
+    height:"311px",
+    layout:"fitColumns",
+	//virtualDomHoz:true,
+	selectable:true,
+	selectableRangeMode:"click",
+	//movableRows: true, //enable user movable rows
+	history:true, //allow undo and redo actions on cells
+    //reactiveData:true, //turn on data reactivity
+    data:tabledata,
+    columns:[
+		{rowHandle:true, formatter:"handle", headerSort:false, frozen:true, width:30, minWidth:30},
+		{title:"ID", field:"id", width:50},
+		{title:"Column names", field:"columnName"},
+		{title:"Operator", field:"operator", editor:"select", editorParams:{values:["=", ">", "<"]}},
+		{title:"Filter values", field:"filterValue",editor:"input"},
+		{title:"Column datatype", field:"colDatatype"}
+		
+],
+});
+
+function updateDropDownColumns(){
+	if (filterTable.value == ""){
+		var list = document.getElementById("filterColumns");
+		while (list.hasChildNodes()) { 
+			if (Object.keys(list).length == 1){break;}
+			list.removeChild(list.lastChild);
+		  
+		}
+		return;
+	}
+	//remove previous options
+	var list = document.getElementById("filterColumns");
+	// As long as <ul> has a child node, remove it
+	while (list.hasChildNodes()) {  
+		if (Object.keys(list).length == 1){break;}
+		list.removeChild(list.lastChild);
+	  
+	}
+	
+	var tableData = {{tableData|tojson}};
+	//find the right table data
+	var selectedTableName = filterTable.value;
+	var selectedTableData;
+	for(var currData in tableData){
+		if(tableData[currData].table == selectedTableName){
+			selectedTableData = tableData[currData].colData;
+			
+			break; // If you want to break out of the loop once you've found a match
+		}
+	}
+	if (Object.keys(colDatatypes).length > 0){colDatatypes ={};}
+	
+	
+	
+	for (let i = 0; i < Object.keys(selectedTableData).length; i++){
+		var colName = selectedTableData[i][1];
+		colDatatypes[[selectedTableData[i][1]]] = selectedTableData[i][2];
+		var x = document.createElement("OPTION");
+		x.setAttribute("value", colName);
+		var t = document.createTextNode(colName);//create name whitch user see
+		x.appendChild(t);
+		document.getElementById("filterColumns").appendChild(x);
+	}
+	//console.log(colDatatypes);
+}
+
+document.getElementById("addFilterVal").addEventListener("click", function(){
+	var string = filterValue.value;
+	if (filterColumns.value == ""){alert("Izvēlieties tabulas kolonnu!"); return;}
+	else if (filterOperators.value == ""){alert("Izvēlieties pielīdzināšanas zīmi!"); return;}
+	
+	if ((!!string) && string != " "){
+		if (string[0] != " "){
+			//table.addColumn({title:colName.value, field:colName.value}, false, "name").then(function//})
+			var rowIndex = table.getDataCount();
+			table.addRow({id:rowIndex, columnName:filterColumns.value, operator:filterOperators.value, filterValue:filterValue.value, colDatatype:colDatatypes[filterColumns.value]}, false);
+		}
+		else if (string[0] == " "){alert('Filter value starts with space character!'); return;}
+		}
+	else{
+		if (!string){alert('Filter value field is empty!'); return;}
+		else if (string == " ") {alert('Filter value field has only space character!'); return;}
+	}
+});
+
+//remove selected row from table
+document.getElementById("removeFilterVal").addEventListener("click", function(){
+	var selectedRows = table.getSelectedRows();
+	for(var i=0;i<selectedRows.length;i++)
+		{
+		table.deleteRow(selectedRows[i]);
+		}
+	rewriteID();
+});
+
+function rewriteID(){
+	var data = table.getData();
+	for (var i=0; i<data.length; i++){
+		data[i]['id'] = i;
+	}
+	table.clearData();
+	table.addData(data);
+}
+
+document.getElementById("requestData").addEventListener("click", function(){
+	  //var dataToReturn = "";
+	  if (filterTable.value == "") {alert('Select table!');return;}
+	  $.ajax({
+      type: "POST",
+      contentType: "application/json; charset=utf-8",
+      url: "/searchNewRequestData?table=" + filterTable.value + "&username=" + "{{username}}",
+      data: JSON.stringify(table.getData()),
+		success: function (result) {
+        if(result['info'] === "no_errors") location.href = "/recordsTab?customRecords=" + "{{username}}" + "&table=" + filterTable.value
+      },
+	  dataType: "json"
+    });
+	//return dataToReturn;
+});
+
+document.getElementById("requestDataLast").addEventListener("click", function(){
+	  //var dataToReturn = "";
+	  if (filterTable.value == "") {alert('Select table!');return;}
+	  $.ajax({
+      type: "POST",
+      contentType: "application/json; charset=utf-8",
+      url: "/searchNewRequestData?table=" + filterTable.value + "&username=" + "{{username}}",
+      data: JSON.stringify([{columnName:'rowid',operator:'<',filterValue:'50'}]),
+		success: function (result) {
+        if(result['info'] === "no_errors") location.href = "/recordsTab?customRecords=" + "{{username}}" + "&table=" + filterTable.value
+      },
+	  dataType: "json"
+    });
+	//return dataToReturn;
+});
+
+
+document.getElementById("filterTable").addEventListener("change", updateDropDownColumns);
+</script>
+
+{% endblock %}
+
+{% block style %}
+	button {
+		font-family:sans-serif;
+		font-weight:bold; 
+		color: white;
+		background-color: dodgerblue;
+		border-radius: 25px;
+		border: 0px;
+		padding: 5px 5px 5px 5px;
+		margin-top:5px;
+	}
+	textarea {
+	   resize: none;
+	}
+	select {
+	  -webkit-appearance: menulist-button;
+	  color: black;
+	}
+
+	select:invalid {
+	  color: #aaa;
+	}
+	select option { color: black; }
+	select option:first-child{
+	  color: #aaa;
+	}
+	
+	fieldset{display:inline;}
+{% endblock %}

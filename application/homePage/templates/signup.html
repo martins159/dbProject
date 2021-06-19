@@ -1,0 +1,148 @@
+{% extends "layout.html" %}
+
+{% block navig %}
+	<a class = "active" href="{{ url_for('auth_bp.logout') }}" style="float: right;"><i class="fa fa-times"></i> Iziet</a>
+	<a class = "active" href="{{ url_for('admin_bp.manageUsers') }}"><i class="fa fa-edit"></i> Rediģēt lietotājus</a>
+{% endblock %}
+
+{% block content %}
+  <div class="form-wrapper">
+
+    {% for message in get_flashed_messages() %}
+      <div class="alert alert-warning">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ message }}
+      </div>
+    {% endfor %}
+
+    <h1>Reģistrēt jaunu lietotāju</h1>
+
+    <form method="POST" action="/signup">
+      {{ form.csrf_token }}
+
+      <fieldset class="name">
+        {{ form.name.label }}
+        {{ form.name(placeholder='Uzņēmuma nosaukums') }}
+      </fieldset>
+	  
+	   <fieldset class="email">
+        {{ form.email.label }}
+        {{ form.email(placeholder='piemers@piemers.lv') }}
+        {% if form.email.errors %}
+          <ul class="errors">
+            {% for error in form.email.errors %}
+              <li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </fieldset>
+	  
+      <fieldset class="username">
+        {{ form.username.label }}
+        {{ form.username(placeholder='Lietotājvārds') }}
+        {% if form.username.errors %}
+          <ul class="errors">
+            {% for error in form.username.errors %}
+              <li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </fieldset>
+
+      <fieldset class="password">
+        {{ form.password.label }}
+        {{ form.password }}
+        {% if form.password.errors %}
+          <ul class="errors">
+            {% for error in form.password.errors %}
+              <li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </fieldset>
+
+      <fieldset class="confirm">
+        {{ form.confirm.label }}
+        {{ form.confirm }}
+        {% if form.confirm.errors %}
+          <ul class="errors">
+            {% for error in form.confirm.errors %}
+              <li>{{ error }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+      </fieldset>
+
+
+
+      <div class="submit-button">
+        {{ form.submit }}
+      </div>
+
+    </form>
+  </div>
+{% endblock %}
+
+{% block style %}
+	h1{
+		text-align:center;
+	}
+
+	.name{
+	  border: 1px solid transparent;
+	  background-color: white;
+	  padding: 10px;
+	  font-size: 16px;
+	  text-align:center;
+	}
+	.email{
+	  border: 1px solid transparent;
+	  background-color: white;
+	  padding: 10px;
+	  font-size: 16px;
+	  text-align:center;
+	}
+	.username{
+	  border: 1px solid transparent;
+	  background-color: white;
+	  padding: 10px;
+	  font-size: 16px;
+	  text-align:center;
+	}
+	.password{
+	  border: 1px solid transparent;
+	  background-color: white;
+	  padding: 10px;
+	  font-size: 16px;
+	  text-align:center;
+	}
+	.confirm{
+	  border: 1px solid transparent;
+	  background-color: white;
+	  padding: 10px;
+	  font-size: 16px;
+	  text-align:center;
+	}
+	
+	input {
+	  border: 1px solid transparent;
+	  background-color: #f1f1f1;
+	  padding: 10px;
+	  font-size: 16px;
+	  display: block;
+      margin : 0 auto;
+	}
+	.submit-button{
+		text-align:center;
+	}
+	.login-signup {
+		text-align:center;
+		font-weight:300;
+		font-size:0.8em;
+		font-family:'Poppins', sans-serif;
+		margin-top:20px;
+
+		a{
+		  color:#5eb9d7;
+		  font-weight:500;
+		}
+	}
+
+
+{% endblock %}

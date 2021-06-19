@@ -1,0 +1,32 @@
+-------------Python libraries------------
+requests
+email_validator
+flask
+flask_sqlalchemy
+flask_redis
+flask_login
+flask_assets
+waitress
+flask_wtf
+pandas
+fpdf
+matplotlib
+PyPDF2
+----------------additional soft--------------
+wget		#on linux as installed soft, on windos as .exe file already included in app directory
+sqlite3
+
+---------------if using apache2 on linux------------------
+sudo apt-get install apache2
+sudo apt-get install libapache2-mod-wsgi-py3 python-dev	# Install mod_wsgi for python3
+sudo a2enmod wsgi 						# enable mod_wsgi
+sudo nano /etc/apache2/sites-available/dbProject.conf
+	# copy config file from appInfo directory
+sudo a2ensite dbProject
+sudo service apache2 restart 
+
+-//-//-//-//-//-//-//-//-//-/Info about setup on apache/-//-//-//-//-//-//-//-//-//
+https://www.digitalocean.com/community/tutorials/how-to-deploy-a-flask-application-on-an-ubuntu-vps
+https://flask.palletsprojects.com/en/2.0.x/deploying/mod_wsgi/
+https://modwsgi.readthedocs.io/en/develop/configuration-directives/WSGIDaemonProcess.html
+https://github.com/GrahamDumpleton/mod_wsgi/issues/614		# info from forum about python multiprocess isue with mod_wsgi

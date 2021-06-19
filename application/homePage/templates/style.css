@@ -1,0 +1,109 @@
+.topnav {
+    margin: auto;
+    background-color:dodgerblue;
+    border-radius: 25px;
+    overflow:hidden;
+    position: fixed;
+    padding: 4px 4px 4px 4px;
+    top: 5px;
+    right: 5px;
+    left: 5px;
+    width: 95%;
+}
+
+.active {
+    float:left;
+    color:white;
+    text-align:center;
+    text-decoration:none;
+    font-size:20px;
+    font-family: sans-serif;
+    font-weight: bold;
+    padding:13px 16px 13px;
+}
+
+.active:hover{
+    background-color: mintcream;
+    color: dodgerblue;
+    border-radius: 25px;
+}
+
+.topnav fieldset {
+    float:right;
+    border:none;
+    color:white;
+    font-size:20px;
+    text-align:center;
+    font-family:sans-serif;
+    font-weight:bold;
+    padding:13px 16px 2px;
+}
+
+.submit-button input[type=submit]{
+    float:right;
+    background-color:white;
+    color:dodgerblue;
+    border-radius:25px;
+    text-align:center;
+    text-decoration:none;
+    font-size:20px;
+    font-family: sans-serif;
+    font-weight: bold;
+    padding:13px 16px 13px;
+}
+
+#username {
+    border-radius: 25px;
+    padding: 5px 5px 5px;
+}
+
+#password {
+    border-radius: 25px;
+    padding: 5px 5px 5px;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    width: 100%;
+    background-color: #383838;
+    padding-left: 5px;
+    text-align: center;
+    color: white;
+    font-family: sans-serif;
+    font-size: 14px;
+}
+
+.middle {
+    position: absolute;
+    top: 300px;
+    left: 500px;
+}
+
+.middle_contact_r {
+    background-color: #DCDCDC;
+    color: #696969;
+    font-family: sans-serif;
+    position: absolute;
+    text-align: justify;
+    top: 90px;
+    left: 50px;
+    width: 45%;
+    padding: 10px 20px 10px 20px;
+    border-radius: 25px;
+}
+
+.middle_contact_l {
+    background-color: #DCDCDC;
+    color: #696969;
+    font-family: sans-serif;
+    position: absolute;
+    top: 90px;
+    right: 50px;
+    width: 45%;
+    padding: 10px 20px 10px 20px;
+    border-radius: 25px;
+    text-align: justify;
+}

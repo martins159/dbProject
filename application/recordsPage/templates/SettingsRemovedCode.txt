@@ -1,0 +1,99 @@
+--------Code for url assignment for tables, for client side--------------------
+
+<fieldset>
+	<legend>Assign url to user tables:</legend>
+	<select id="usrTableUrl" required>
+			<option value="">Choose table</option>
+			{% if database != None %}
+				{% for item in databaseTables %}
+				<option value={{item}}>{{item}}</option>
+				{% endfor %}
+			{% else %}
+				<option value=noDB>No database attached</option>
+			{% endif %}
+	</select>
+	<input type="text" id="urlForTable" placeholder="url for table">
+	<button id="addUrl">Add url</button>
+	<button id="delUrl">Delete selected</button>
+	<button id="updtTables">Update tables</button>
+	<br>
+	<p>Currently url assigned for {{tableDataUrl[0]}} tables of {{tableDataUrl[1]}}</p> 
+	<div id='userUrlPreview'></div>
+</fieldset>
+
+<script>
+
+var table3 = new Tabulator("#userUrlPreview", {
+    height:"311px",
+    layout:"fitColumns",
+	//virtualDomHoz:true,
+	selectable:true,
+	selectableRangeMode:"click",
+	//movableRows: true, //enable user movable rows
+	history:true, //allow undo and redo actions on cells
+    //reactiveData:true, //turn on data reactivity
+    data:{{urlDataExport|tojson}},
+	columns:[
+	{title:"Table name", field:"tableName",width:200, minWidth:200},
+	{title:"Url", field:"webUrl"},
+	],
+});
+
+	document.getElementById("addUrl").addEventListener("click", function(){
+		if (usrTableUrl.value == ""){alert('Please select table.'); return;}
+		if (urlForTable.value == ""){alert('There are no url specified.'); return;}
+		$.ajax({
+		  type: "POST",
+		  contentType: "application/json; charset=utf-8",
+		  url: "/settingsUserUpdateTableUrl?username=" + '{{username}}' + '&table=' + String(usrTableUrl.value) + '&url=' + String(urlForTable.value),
+		  //data: JSON.stringify(table2.getData()),
+		  success: function (data) {
+		   //alert(data['info']);
+		   console.log(data['info'])
+		   reloadPage();
+		  },
+		  dataType: "json"//datatype ajax are expecting from response, if 'text' then it will be as string not as dictionary
+		});
+	  });
+	document.getElementById("delUrl").addEventListener("click", function(){
+		var selectedRows = table3.getSelectedRows();
+		//console.log(selectedRows);
+		if (Object.keys(selectedRows).length === 0) {//check if any rows is selected
+			alert('Select at least one row to delete it');
+			return;
+			}
+		var tableNames = [];
+		for(var i=0;i<selectedRows.length;i++)
+			{
+			var currentData = selectedRows[i].getData();
+			tableNames.push(currentData['tableName']);
+			}
+		$.ajax({
+		  type: "POST",
+		  contentType: "application/json; charset=utf-8",
+		  url: "/settingsUserUpdateTableUrl?targetDatabase=" + '{{database}}',
+		  data: JSON.stringify(tableNames),
+		  success: function (data) {
+		   //alert(data['info']);
+		   console.log(data['info'])
+		   reloadPage();
+		  },
+		  dataType: "json"//datatype ajax are expecting from response, if 'text' then it will be as string not as dictionary
+		});
+	});
+	
+	document.getElementById("updtTables").addEventListener("click", function(){
+		$.ajax({
+		  type: "POST",
+		  contentType: "application/json; charset=utf-8",
+		  url: "/settingsUserUpdateTableUrl?username=" + '{{username}}',
+		  //data: JSON.stringify(table2.getData()),
+		  success: function (data) {
+		   alert(data['info']);
+		   console.log(data['info'])
+		   //reloadPage();
+		  },
+		  dataType: "json"//datatype ajax are expecting from response, if 'text' then it will be as string not as dictionary
+		});
+	});
+  </script>

@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Atskaišu portāls</title>
+        <link type="text/css" rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <body>
+        <div class="topnav">
+            <a class="active" href="home.html"><i class="fa fa-home"></i> Sākums</a>
+            <a class = "active" href="contact.html"><i class="fa fa-address-book"></i> Kontakti</a>
+            <form method="POST" action="login">
+                <input id="csrf_token" name="csrf_token" type="hidden" value="ImRjNjg1NjJmNjA1ZTA1M2ZiZDYzM2UyMTdhM2ZlMmY5MTNkMjlmY2Ei.X7lmiQ.VoAktybXP1apuqlGSpYLIuaxu4M">
+                <div class="submit-button">
+                    <input id="submit" name="submit" type="submit" value="Ienākt">
+                </div>
+                <fieldset class="password">
+                    <label for="password">
+                        Parole
+                    </label>
+                    <input id="password" name="password" placeholder="password" required type="text" value="">
+                </fieldset>
+                <fieldset class="username">
+                    <label for="username">
+                        Lietotājvārds
+                    </label>
+                    <input id="username" name="username" placeholder="username" required type="text" value="">
+                </fieldset>
+            </form>
+        </div>
+   	<div class="middle">
+        <img src="pump.png" width="1000" height="120" alt="Pump_logo">
+	</div>
+	<div class="footer">
+		<p>Piedrujas iela 7, Rīga, LV-1073 Latvija    Tālrunis: +371 6755 3750    Fakss: +371 6754 5131    E-pasts: pump@pump.lv</p>
+	</div>
+    </body>
+</html>

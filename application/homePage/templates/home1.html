@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block navig %}
+	{% if username is defined %}
+		<a class = "active" href="" style="float: right;"> Sveiki {{username}}!</a>
+		<a class = "active" href="{{ url_for('auth_bp.logout') }}" style="float: right;"><i class="fa fa-times"></i> Iziet</a>
+		{% if (isAdmin > 0) %}
+			<a class = "active" href="{{ url_for('admin_bp.manageUsers') }}"><i class="fa fa-edit"></i> Rediģēt lietotājus</a>
+		{% else %}
+			<a class = "active" href="{{ url_for('records_bp.recordsTab') }}"><i class="fa fa-play"></i> Datubāzes dati</a>
+		{% endif %}
+	{% else %}
+		<a class = "active" href="{{ url_for('auth_bp.login') }}"><i class="fa fa-play"></i> Ienākt</a>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+    <img src="{{url_for('static', filename = 'pump.png')}}" width="1000" height="120" alt="Pump_logo" class="middle">
+{% endblock %}
+

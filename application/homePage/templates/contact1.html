@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block navig %}
+	{% if username is defined %}
+		<a class = "active" href="" style="float: right;"> Sveiki {{username}}!</a>
+		<a class = "active" href="{{ url_for('auth_bp.logout') }}" style="float: right;"><i class="fa fa-times"></i> Iziet</a>
+		{% if (isAdmin > 0) %}
+			<a class = "active" href="{{ url_for('admin_bp.manageUsers') }}"><i class="fa fa-edit"></i> Rediģēt lietotājus</a>
+		{% else %}
+			<a class = "active" href="{{ url_for('records_bp.recordsTab') }}"><i class="fa fa-play"></i> Datubāzes dati</a>
+		{% endif %}
+	{% else %}
+		<a class = "active" href="{{ url_for('auth_bp.login') }}"><i class="fa fa-play"></i> Ienākt</a>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="middle_contact">
+        <h2>Par mums</h2>
+        <p>"Pumptechnique" ir industriālo šķidrumu kontroles un uzskaites sistēmu un to komponenšu vadošais piegādātājs Latvijā. Galvenie produkti ir mērīšanas un sajaukšanas ierīces, augstas precizitātes radartipa līmeņa devēju sistēmas, rūpnieciskie sūkņi, iekraušanas ierīces, vārsti un izpildmehānismi.</p>
+
+        <p>20 gadu laikā "Pumptechnique" ir kļuvis par vienu no nedaudzajiem uzņēmumiem Latvijā, kuri nodrošina pilnu klientu apkalpošanas ciklu - risinājumu izvēli, iekārtu piegādi, iekārtu uzstatīšanu, ieregulēšanu un to apkalpošanu.</p>
+
+        <p>PROCESU AUTOMATIZĀCIJA. Pēdējo desmit gadu laikā "Pumptechnique" ir izstrādājis terminālu automatizācijas risinājumus naftas produktu uzglabāšanas termināliem. Šīs sistēmas apvieno mehāniskās un digitālās tehnoloģijas augstas precizitātes mērīšanas, maisīšanas un uzglabāšanas tvertņu līmeņa monitoringam.</p>
+	</div>
+        <div class="middle_contact">
+        <h2>Kontakti</h2>
+            <p>SIA “PUMPTECHNIQUE”</p>
+
+            <p>Reģ. Nr. 40003501445</p>
+            <p>PVN reģ.Nr. LV40003501445</p>
+
+            <p>Juridiskā un faktiskā adrese:</p>
+            <p>Piedrujas iela 7</p>
+            <p>Rīga, LV-1073</p>
+
+            <p>Tālrunis:   +371 67 553 750</p>
+            <p>Fakss:       +371 67 545 131</p>
+            <p>E-pasts:     pump@pump.lv</p>
+
+            <p>Darba laiks:</p>
+            <p>Pirmdiena- Piektdiena no 09:00-18:00,</p>
+            <p>Sestdiena, Svētdiena brīva</p>
+	</div>
+{% endblock %}

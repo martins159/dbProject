@@ -1,0 +1,361 @@
+{% extends 'layout.html' %}
+
+{% block navig %}
+	<a class = "active" href="" style="float: right;"> Sveiki {{username}}!</a>
+	<a class = "active" href="{{ url_for('auth_bp.logout') }}" style="float: right;"><i class="fa fa-times"></i> Iziet</a>
+{% endblock %}
+
+{% block content %}
+
+<p style="margin-top:15px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">Izvēlētā tabula: {{currTable}} </p>
+
+<!--.......................... Filtra definesana ...................... -->
+<fieldset style="border:5px solid white; display:block; margin-left:auto; margin-right:auto; margin-top:5px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">
+
+  <legend>Datu izvēles rīki</legend>
+
+  <button type="button" id="rowData">Izvēlēties iezīmēto cikla ierakstu</button>
+  <input type="submit" class="submitBTN" style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;" value="Izvēlēties datubāzes datus" 
+  onclick="window.location='/searchNew';" />
+  <input type="submit" class="submitBTN" style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;" value="Iestatījumi" 
+  onclick="window.location='/settings';" />
+  <button id="updtTables" type="button">Atjaunot tabulu ierakstus</button>
+
+  <legend style="margin-top:5px; margin-bottom:5px;">Tabulas datu filtrēšana</legend>
+  <select id="filter-field" required style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;">
+    <option value="">Izvēlēties kolonnu</option>
+	{% for item in colNamesExport %}
+		<option value={{item["field"]}}>{{item["title"]}}</option>
+    {% endfor %}
+  </select>
+
+  <select id="filter-type" style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;">
+    <option value="=">=</option>
+    <option value="<"><</option>
+    <option value="<="><=</option>
+    <option value=">">></option>
+    <option value=">=">>=</option>
+    <option value="!=">!=</option>
+    <option value="like">like</option>
+  </select>
+  <form class="form-group">
+		<input id="filter-value" type="text" placeholder="Filtrējamā vērtība" class="form-control" style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px; margin-top:5px;">
+    </form>
+  
+  
+	<button type="button" onclick="addFilter()">Pievienot filtru</button>
+    <button type="button" onclick="filterSelectedRows()">Izvēlētie filtri</button>
+  <button id="filter-clear" type="button">Nodzēst filtrus</button>
+  <button type="button" onclick="downloadTable()">Lejuplādēt datus</button>
+  <br>
+  <textarea id="filterStatusBox" name="w3review" rows="3" cols="80" disabled style="margin-top:5px;"></textarea>
+  
+</fieldset>
+<!--..................................................................... -->
+<div id="example-table" style="margin-top:5px;"></div>
+
+<link href="https://unpkg.com/tabulator-tables@4.8.4/dist/css/tabulator.min.css" rel="stylesheet">
+<script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.8.4/dist/js/tabulator.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<!-- Importing jquery cdn -  for date button-->
+<link href="http://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css"  rel="Stylesheet"type="text/css" />
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+<script type="text/javascript"  src="http://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<!-- style  for date button-->
+<style type="text/css">
+	.ui-datepicker-trigger { 
+		
+		position:relative; top:5px ;right:20px ; height:20px
+	}
+</style>
+<script>
+//----------------------------------------------date button on input field optional input -------------------------
+$(document).ready(function () {
+            $("#filter-value").datepicker({
+                //showOn: "button",
+				showOn: "button",
+                // Button image stored on local device
+                buttonImage: "/static/calendar.png",    
+                buttonImageOnly: true,
+                dateFormat: "d/m/yy",
+				constrainInput: false
+            });
+        });
+// -------------------------------------------------Filtrs --------------------------------------------------------
+//boolean which describe if auto filtering was active, so we could know that last filter is from that, so it should be removed next time
+function retrieveSelectedRow(){
+	var data = table.getData("selected"); //return currently filtered data
+	console.log(data);
+	return data;
+	}
+
+var autoFilteringActive = false;
+ function addFilter(){
+	autoFilteringActive = false;
+	updateTextBox();
+	}
+function updateTextBox(){
+	var filters = table.getFilters();
+	var statusBoxString = "";
+	var loop;
+	for (loop = 0; loop < Object.keys(filters).length; loop++){
+		var currentFilter = filters[loop]
+		statusBoxString = statusBoxString + "Filter " + (loop+1) + " : " + currentFilter['field'] + " " +  currentFilter["type"] + " " +  currentFilter["value"] + " " + "&#13;&#10;";
+	}
+	//console.log(statusBoxString);
+	document.getElementById('filterStatusBox').innerHTML = statusBoxString;
+}
+ 
+function filterSelectedRows(){
+  var selectedRows = table.getSelectedData();
+  var arrayLenght = selectedRows.length
+  var idArray = []
+  console.log(arrayLenght)
+  //if (arrayLenght == 0){return}
+  var loop;
+  for (loop = 0; loop < arrayLenght; loop++){
+    idArray.push(selectedRows[loop]['id']);
+  };
+  
+  //console.log(idArray);
+  table.setFilter("id", "in", idArray);
+  updateTextBox();
+}
+
+//Define variables for input elements
+var fieldEl = document.getElementById("filter-field");
+var typeEl = document.getElementById("filter-type");
+var valueEl = document.getElementById("filter-value");
+
+//Custom filter example
+function customFilter(data){
+    return data.car && data.rating < 3;
+}
+
+//Trigger setFilter function with correct parameters
+function updateFilter(){
+  var filterVal = fieldEl.options[fieldEl.selectedIndex].value;
+  //console.log(filterVal)
+  var typeVal = typeEl.options[typeEl.selectedIndex].value;
+
+  var filter = filterVal == "function" ? customFilter : filterVal;
+
+  if (filterVal == "" && autoFilteringActive == true){//if empty field selected then remove last filter
+	var filters = table.getFilters();
+	filters.pop()//removes last element
+	table.setFilter(filters);//redefine filters
+	autoFilteringActive = false;
+  }
+  
+  
+  if(filterVal == "function" ){
+    typeEl.disabled = true;
+    valueEl.disabled = true;
+  }else{
+    typeEl.disabled = false;
+    valueEl.disabled = false;
+  }
+
+  if(filterVal){
+    //table.setFilter(filter,typeVal, valueEl.value);
+	//addFilter
+	if (autoFilteringActive == false) {
+		table.addFilter(filter,typeVal, valueEl.value);
+		autoFilteringActive = true;
+	} 
+	else{
+		var filters = table.getFilters();
+		//filters.shift();//removes first element
+		filters.pop()//removes last element
+		table.setFilter(filters);//redefine filters
+		table.addFilter(filter,typeVal, valueEl.value);
+		//console.log(table.getFilters())
+	}
+	console.log(table.getFilters())
+  }
+}
+
+//Update filters on value change
+document.getElementById("filter-field").addEventListener("change", updateFilter);
+document.getElementById("filter-type").addEventListener("change", updateFilter);
+document.getElementById("filter-value").addEventListener("keyup", updateFilter);
+
+//Clear filters on "Clear Filters" button click
+document.getElementById("filter-clear").addEventListener("click", function(){
+  fieldEl.value = "";
+  typeEl.value = "=";
+  valueEl.value = "";
+	document.getElementById('filterStatusBox').innerHTML = "";
+  table.clearFilter();
+});
+//----------
+//document.getElementById("submitBtn").addEventListener("change", retrieveSelectedRow);//   <<<--------------<<<--------------<<<--------------<<<--------------
+
+// --------------------------------------------------- Tabulas definēšana ---------------------------------------------------------------
+
+var minMaxFilterEditor = function(cell, onRendered, success, cancel, editorParams){
+
+    var end;
+
+    var container = document.createElement("span");
+
+    //create and style inputs
+    var start = document.createElement("input");
+    start.setAttribute("type", "number");
+    start.setAttribute("placeholder", "Min");
+    start.setAttribute("min", 0);
+    start.setAttribute("max", 100);
+    start.style.padding = "4px";
+    start.style.width = "50%";
+    start.style.boxSizing = "border-box";
+
+    start.value = cell.getValue();
+
+    function buildValues(){
+        success({
+            start:start.value,
+            end:end.value,
+        });
+    }
+
+    function keypress(e){
+        if(e.keyCode == 13){
+            buildValues();
+        }
+
+        if(e.keyCode == 27){
+            cancel();
+        }
+    }
+
+    end = start.cloneNode();
+    end.setAttribute("placeholder", "Max");
+
+    start.addEventListener("change", buildValues);
+    start.addEventListener("blur", buildValues);
+    start.addEventListener("keydown", keypress);
+
+    end.addEventListener("change", buildValues);
+    end.addEventListener("blur", buildValues);
+    end.addEventListener("keydown", keypress);
+
+
+    container.appendChild(start);
+    container.appendChild(end);
+
+    return container;
+ }
+
+//custom max min filter function
+function minMaxFilterFunction(headerValue, rowValue, rowData, filterParams){
+    //headerValue - the value of the header filter element
+    //rowValue - the value of the column in this row
+    //rowData - the data for the row being filtered
+    //filterParams - params object passed to the headerFilterFuncParams property
+
+        if(rowValue){
+            if(headerValue.start != ""){
+                if(headerValue.end != ""){
+                    return rowValue >= headerValue.start && rowValue <= headerValue.end;
+                }else{
+                    return rowValue >= headerValue.start;
+                }
+            }else{
+                if(headerValue.end != ""){
+                    return rowValue <= headerValue.end;
+                }
+            }
+        }
+
+    return true; //must return a boolean, true if it passes the filter.
+}
+ 
+var tabledata = {{tableData|tojson}}
+var table = new Tabulator("#example-table", {
+    data:tabledata, //assign data to table
+    height:"600px",
+    layout:"fitColumns",
+	selectable:true,
+	selectableRangeMode:"click",
+	columns:{{colNamesExport|tojson}}
+	
+});
+// --------------------------AJAX script for info sending to python on POST event ------------------------
+// more info below name 'jQuery ajax()'
+//post event is triggered by button with id = rowData
+
+ $("#rowData").click(function () {
+	//pdfConfigPOST
+ 
+    $.ajax({
+      type: "POST",
+      contentType: "application/json; charset=utf-8",
+      url: "/recordsTab",
+	  //url: "/pdfConfigPOST",
+      data: JSON.stringify(retrieveSelectedRow()),
+      success: function (data) {
+       console.log(data)
+      },
+      dataType: "json"
+    }).done(function() {
+			window.location="/pdfConfig";
+			});
+	});
+
+// $("#rowData").click(function() {
+ //   setTimeout(function() {
+ //       window.location="/pdfConfig";
+  //  }, 1000);
+//});
+// ------------------------------- Download table -------------------------------------
+function downloadTable(){
+	table.download("csv", "data.csv");
+}
+
+	document.getElementById("updtTables").addEventListener("click", function(){
+		$.ajax({
+		  type: "POST",
+		  contentType: "application/json; charset=utf-8",
+		  url: "/settingsUserUpdateTableUrl?username=" + '{{username}}',
+		  //data: JSON.stringify(table2.getData()),
+		  success: function (data) {
+		   alert(data['info']);
+		   console.log(data['info'])
+		   //reloadPage();
+		  },
+		  dataType: "json"//datatype ajax are expecting from response, if 'text' then it will be as string not as dictionary
+		});
+	});
+</script>
+{% endblock %}
+
+{% block style %}
+	button {
+		font-family:sans-serif;
+		font-weight:bold; 
+		color: white;
+		background-color: dodgerblue;
+		border-radius: 25px;
+		border: 0px;
+		padding: 5px 5px 5px 5px;
+		margin-top:5px;
+	}
+	textarea {
+	   resize: none;
+	}
+	select {
+	  -webkit-appearance: menulist-button;
+	  color: black;
+	}
+
+	select:invalid {
+	  color: #aaa;
+	}
+	select option { color: black; }
+	select option:first-child{
+	  color: #aaa;
+	}
+	
+	fieldset{display:inline;}
+
+{% endblock %}
