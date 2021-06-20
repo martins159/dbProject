@@ -1,4 +1,4 @@
-#!/var/www/dbProject/application/venv/bin/python3.8
+#!/var/www/dbProject/application/venv/bin/python3.7.3
 import sys
 import logging
 logging.basicConfig(stream=sys.stderr)
