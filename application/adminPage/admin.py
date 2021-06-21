@@ -164,7 +164,7 @@ def createTable():
 	columnNames = [item['columnName'] for item in recievedData]
 	datatypes = [item['datatype'] for item in recievedData]
 	
-	print('--------columnNames_admin------>',columnNames)
+	#print('--------columnNames_admin------>',columnNames)
 	
 	userConnected.createTable(tableName, columnNames, datatypes, listType = True)
 	#-----------------------------------------------Create headers table------------------------------------------------------------------------
@@ -203,7 +203,7 @@ def returnData():
 	#print('username: ',username)
 	#print('table: ',table)
 	#print('recordAmount: ',recordAmount)
-	print('record amount ----------->', recordAmount)
+	#print('record amount ----------->', recordAmount)
 	userToEdit = User.query.filter_by(username=username).first()
 	userConnected = dbconn.user()
 	userConnected.connectToDB(userToEdit.database)

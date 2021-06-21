@@ -178,10 +178,10 @@ def recordsTab():
 			v = request.get_json()
 			if v != None:#check if not None - this is case when page loads it somehow triger POST event once
 				if len(v) != 0:#check if is not empty list - this would be case if user is not selected a row
-					print("------------->recieve row info<-------------")
-					print("--post no records tab--")
-					print("----------> value of 'v': ", v)
-					print(type(v[0]))#liste kas sastāv no dictionary elementiem
+					#print("------------->recieve row info<-------------")
+					#print("--post no records tab--")
+					#print("----------> value of 'v': ", v)
+					#print(type(v[0]))#liste kas sastāv no dictionary elementiem
 					session['dic']=v[0]
 					#return redirect(url_for('records_bp.pdfConfig'))
 					return jsonify({
@@ -365,9 +365,9 @@ def pdfConfig():
 	userConnected_txt.connectToDB(userToEdit_txt.database)
 	databaseTables_txt = userConnected_txt.getDatabaseTables()
 	databaseData_txt = userConnected_txt.selectData(current_table_txt,selectAll = True,printOnConsole = False)
-	print('/////////////////////////////////////SAKASDBTABULA????????????????????????????????????????????????')
-	print(str(databaseData_txt[0][0]))
-	print(str(databaseData_txt[0][1]))
+	#print('/////////////////////////////////////SAKASDBTABULA????????????????????????????????????????????????')
+	#print(str(databaseData_txt[0][0]))
+	#print(str(databaseData_txt[0][1]))
 
 	#print('-------------------esmute-----------------')
 	pdfParamsDict = session['dic']
@@ -483,7 +483,7 @@ def pdfConfig():
 		paramsListExport.append({'1':key,'2':strValue,'3':idNumber})
 
 	userConnected_txt.conn.close()
-	print('--------------------export-------------------------')
+	#print('--------------------export-------------------------')
 	#print(paramsListExport)
 #---------------------lielumi priekš grafika izveides---------------------------
 	#print(cycleTimeSum)
@@ -554,8 +554,8 @@ def pdfConfig():
 				pdfEditedDictIdObj = zip(pdfEditedIdList, pdfEditedDictStr)
 				pdfEditedId = dict(pdfEditedDictIdObj)
 				#print('------------------------edited-------------------')
-				print("--post no pdf --")
-				print('----------------------->pdfEditedId: ',pdfEditedId) 
+				#print("--post no pdf --")
+				#print('----------------------->pdfEditedId: ',pdfEditedId) 
 				session['dict'] = pdfEditedId
 				#return redirect(url_for('records_bp.autoclave_pdf'))
 				print(graphYValList)
@@ -582,9 +582,9 @@ def autoclave_pdf():
 	userToEditTitl = userToEditTit.replace('>','')
 	userToEditTitle = userToEditTitl.replace('User ','')
 	userToEditTitleText = userToEditTitl.replace('User','Atskaiti sagatavoja:')
-	print('------------------->',session)
+	#print('------------------->',session)
 	acParamsDict = session['dict']
-	print(acParamsDict)
+	#print(acParamsDict)
 	pdf = PDF()
 	pdf = PDF(orientation = 'P', unit = 'mm', format = 'A4')
 	os.chdir("./application/pdfFormat")
