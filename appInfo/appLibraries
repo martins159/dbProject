@@ -30,9 +30,20 @@ sudo pip install virtualenv
 sudo virtualenv venv
 source venv/bin/activate 
 pip install -r requirementsVenv.txt
-----------------------------------------------------------------------------
-
-
+--------------------Github console commands - create working directory for git--------------------------------------------------------
+git init
+git add .
+git commit -m "Add index.html"
+git remote add origin https://github.com/NdagiStanley/new-repository.git
+git branch -M main
+git push -u origin main
+---------------------push to git---------------------------
+git add .
+git commit -m "Commit message"
+git push origin main
+---------------------pull from git------------------------
+git pull origin main	# if origin is added
+git pull <remote repo>	# if origin is not added, where '<remote repo>' is reposit link
 -//-//-//-//-//-//-//-//-//-/Info about setup on apache/-//-//-//-//-//-//-//-//-//
 https://www.digitalocean.com/community/tutorials/how-to-deploy-a-flask-application-on-an-ubuntu-vps
 https://flask.palletsprojects.com/en/2.0.x/deploying/mod_wsgi/
