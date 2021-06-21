@@ -587,6 +587,7 @@ def autoclave_pdf():
 	#print(acParamsDict)
 	pdf = PDF()
 	pdf = PDF(orientation = 'P', unit = 'mm', format = 'A4')
+	print("----------current working directory----------->",os.getcwd())
 	os.chdir("./application/pdfFormat")
 	pdf.add_font('DejaVu', '', 'DejaVuSansCondensed.ttf', uni=True)
 	os.chdir("../..")
