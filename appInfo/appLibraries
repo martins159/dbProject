@@ -44,6 +44,8 @@ git push origin main
 ---------------------pull from git------------------------
 git pull origin main	# if origin is added
 git pull <remote repo>	# if origin is not added, where '<remote repo>' is reposit link
+-------------------if there someone else made uppdate already and git refuses push request-------------------
+git pull --rebase origin main	#and after this make another push request
 --------------------Apache debug comands -------------------------------------------------
 sudo tail -100 /var/log/apache2/error.log
 sudo service apache2 restart
