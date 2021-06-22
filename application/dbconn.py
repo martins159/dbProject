@@ -261,6 +261,7 @@ class user(object):
 	def deleteRecords(self, nameOfTable, specificRecords = [], specificColumns = []):
 		if specificRecords != None:
 			tableNames = '('
+			#print("---------specific columns----------->", specificColumns)
 			for loop in range(len(specificRecords)):
 				tableNames += specificColumns[loop] + " = " + "'" + specificRecords[loop] + "'" + ' or'
 			tableNames = tableNames[:-2]

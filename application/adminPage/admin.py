@@ -296,8 +296,9 @@ def updateTableUrl():
 		recordNames = request.get_json()
 		userConnected = dbconn.user()
 		userConnected.connectToDB(targetDatabase)
-		userConnected.deleteRecords('usrUrl', specificRecords = recordNames)
-		#print('---------------->', recordNames)
+		#print('--------recordNames-------->', recordNames)
+		userConnected.deleteRecords('usrUrl', specificRecords = recordNames, specificColumns = ["tableName"])
+		
 		return jsonify({
 			"info"   :  "Data got succesfully!"
 		})
