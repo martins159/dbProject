@@ -55,6 +55,11 @@ config file:
 
 project file:
 	cd /var/www/dbProject
+	
+change permisions to rwx - read, write, execute to all subdirectories and files(capital X is ignored for files):
+	sudo chmod -R a+rwX *
+
+	
 -//-//-//-//-//-//-//-//-//-/Info about setup on apache/-//-//-//-//-//-//-//-//-//
 https://www.digitalocean.com/community/tutorials/how-to-deploy-a-flask-application-on-an-ubuntu-vps
 https://flask.palletsprojects.com/en/2.0.x/deploying/mod_wsgi/
