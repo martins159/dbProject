@@ -19,6 +19,7 @@
   <button type="button" id="selectedUsr" >Rediģēt izvēlēto lietotāju</button>
   <button type="button" id="selectedUsrDelete" title="Lietotājs tiks dzēsts ar viņa datubāzi un visiem tajā esošiem datiem">Dzēst izvēlēto lietotāju</button>
   <button type="button" id="login-signup">Reģistrēt jaunu lietotāju</button>
+  <button type="button" id="recordsExample">Atskaites piemērs</button>
   <br>
   <!--<textarea id="IdTextBox" name="w3review" rows="1" cols="2" placeholder='Select row' disabled style = "margin-top:5px; font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; text-align: center;"></textarea>
   <textarea id="newValue" name="w3review" rows="1" cols="2" placeholder='New value' style = "margin-top:5px; font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; text-align: center;"></textarea>-->
@@ -294,6 +295,11 @@ function reloadPage(){
 document.getElementById("login-signup").addEventListener("click", function(){
   var baseUrl = "/signup";
   window.location.href = baseUrl;
+});
+
+document.getElementById("recordsExample").addEventListener("click", function(){
+  var recEx = "/recordsTab";
+  window.location.href = recEx;
 });
 
 document.getElementById("selectedUsrDelete").addEventListener("click", function(){
