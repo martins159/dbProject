@@ -483,11 +483,13 @@ class user(object):
 		#this function check how many records from begining of list are unique - are not present in current table, then this number is used to shrink orginal recieved data list
 		#after that records are uploaded to table
 		#Counting is performed until first line with same data is detected
-
+	
 		tableInfo = self.getTableInfo(nameOfTable)#get table info
+		#print("-------------------------------------tableInfo---->",tableInfo)
 		keyList = [None] * len(tableInfo)
 		for loop in range(len(tableInfo)):
 			keyList[loop] = tableInfo[loop][1]
+		#print("-----------------------------------------keyList--->",keyList)
 		dataToUpload = 0
 		for rowData in dataList:#in this loop check for first row whitch is not found in database
 			if specificKeyList != None:
@@ -546,7 +548,7 @@ def downloadCSV(url):
 	wgetExe = 'wget.exe'
 	argument1 = '--no-check-certificate'
 	argument2 = '-t1'
-	argument3 = '--referer=http://' + extractedIP + '/Portal/Portal.mwsl?PriNav=FileBrowser'
+	argument3 = '--referer=https://' + extractedIP + '/Portal/Portal.mwsl?PriNav=FileBrowser'
 
 	#-------------check for additional csv files in directory and create new unique name----------------------------------------
 	randIdentificator = ""
@@ -584,11 +586,13 @@ def downloadCSV(url):
 		subprocess.run([wgetExe, argument1, argument2, argument3, url, '-O', outputName], cwd=workingDirectory, shell=True)
 	elif platform.system() == 'Linux':
 		subprocess.run(['wget', argument1, argument2, argument3, url, '-O', outputName], cwd=workingDirectory)
+		
 		#subprocess.Popen(['wget', url])
 		#print('---------------This is Linux!!!!!!!!!!!!!')
 		#return
 	else: print('---------------> something went wrong with Operating system detection <--------------')
 	#-------------------------------------------------------Open, read and delete file -------------------------------------------------------------------
+	print('-------------------------------->',os.getcwd())
 	pathToCSV = workingDirectory + "/" + outputName
 	rawData = []
 	with open(pathToCSV) as f:# cvs reader object must be created inside with statement to succesfully delete the file after it

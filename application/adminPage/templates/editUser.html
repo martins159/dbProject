@@ -219,11 +219,13 @@ var table3 = new Tabulator("#userUrlPreview", {
 document.getElementById("addUrl").addEventListener("click", function(){
 	if (usrTableUrl.value == ""){alert('Please select table.'); return;}
 	if (urlForTable.value == ""){alert('There are no url specified.'); return;}
+	//alert(urlForTable.value);
 	$.ajax({
       type: "POST",
       contentType: "application/json; charset=utf-8",
       url: "/editUserUpdateTableUrl?username=" + '{{username}}' + '&table=' + String(usrTableUrl.value) + '&url=' + String(urlForTable.value),
-      data: JSON.stringify(table2.getData()),
+      //data: JSON.stringify(table2.getData()),
+		data: JSON.stringify(urlForTable.value),
       success: function (data) {
 	   //alert(data['info']);
 	   console.log(data['info'])

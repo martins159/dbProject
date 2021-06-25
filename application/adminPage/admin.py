@@ -311,6 +311,7 @@ def updateTableUrl():
 		for item in selectedData:
 			currentTableData, currentTableNames = dbconn.downloadCSV(item[1])
 			#print(currentTableData)
+			#print("------------------------------------------------------item[0]-------->",item[0])
 			isUpdated = userConnected.updateTableUniqueRecords(item[0], currentTableData)#perform data update
 			if isUpdated == True: tablesUpdated += 1
 		import os
@@ -320,8 +321,8 @@ def updateTableUrl():
 		return jsonify({
 			"info"   :  reportString
 		})
-	
-	url = request.args.get('url')
+	url = request.get_json()
+	#url = request.args.get('url')
 	userToEdit = User.query.filter_by(username=username).first()
 	userConnected = dbconn.user()
 	userConnected.connectToDB(userToEdit.database)
