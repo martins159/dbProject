@@ -3,6 +3,7 @@
 {% block navig %}
 	<a class = "active" href="" style="float: right;"> Sveiki {{username}}!</a>
 	<a class = "active" href="{{ url_for('auth_bp.logout') }}" style="float: right;"><i class="fa fa-times"></i> Iziet</a>
+	<a id="adminBtn" class="active" href="manageUsers"><i class="fa fa-undo"></i> Atpakaļ</a>
 {% endblock %}
 
 {% block content %}
@@ -69,6 +70,13 @@
 	}
 </style>
 <script>
+
+var usrLev = {{ userLevel|tojson }};
+
+if(usrLev == "notAdmin"){
+	document.getElementById("adminBtn").style.visibility = "hidden";
+}
+
 //----------------------------------------------date button on input field optional input -------------------------
 $(document).ready(function () {
             $("#filter-value").datepicker({

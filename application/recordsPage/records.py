@@ -93,6 +93,11 @@ def recordsTab():
 	"""Records list"""
 	if current_user.isAdmin == True: print('user is admin')
 	
+	if current_user.isAdmin == True:
+		 userLevel = "admin"
+	if current_user.isAdmin == False:
+		userLevel = "notAdmin"
+
 	#----------------Check if amont of time has past, if is then register current time in db---------------------
 	if customFunctions.compareTimeDifference(current_user.lastLogin,timePeriodSeconds = 3600) == True:
 		current_user.lastLogin = datetime.datetime.now()#register login time
@@ -128,6 +133,7 @@ def recordsTab():
 			session['currentTable'] = table
 			return render_template(
 			'recordsTab.html',
+			userLevel = userLevel,
 			tableData = variable, columnNames = columnNames, colNamesExport = colNamesExport,  currTable = table, username = current_user.username
 			)
 		except: print('customRecords is present but data not')
@@ -190,13 +196,13 @@ def recordsTab():
 		session['currentTable'] = databaseTables[0]
 		return render_template(
 		'recordsTab.html',
-		tableData = variable, columnNames = columnNames, colNamesExport = colNamesExport, currTable = databaseTables[0], username = current_user.username
+		userLevel = userLevel, tableData = variable, columnNames = columnNames, colNamesExport = colNamesExport, currTable = databaseTables[0], username = current_user.username
 		)
 	else: 
 		userConnected.conn.close()#close sqlite connection
 		return render_template(
 		'recordsTab.html',
-		tableData = [], columnNames = [], colNamesExport = [], currTable = "No table is created yet", username = current_user.username
+		userLevel = userLevel, tableData = [], columnNames = [], colNamesExport = [], currTable = "No table is created yet", username = current_user.username
 		)
 	
 	
