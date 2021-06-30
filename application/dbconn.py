@@ -282,7 +282,7 @@ class user(object):
 	def selectData(self, nameOfTable, listColumnNames = [None], listSearchValues = [None], listOperators = [None], specificColumnsOnly = False, selectCustomFromAllColumns = False, selectAll = False, printOnConsole = True):
 	#example for specific: userConnected.selectData('rsTrade', ['item', 'quantity'], ['testEntry', 1], ['=', '>'])
 	#or for all: userConnected.selectData('rsTrade', selectAll = True)
-		#if selectAll == True: selectCustomFromAllColumns = False#just for override - if select all then ignore all other options
+	#if selectAll == True: selectCustomFromAllColumns = False#just for override - if select all then ignore all other options
 		if self.conn == None:
 			print("you are not connected to database!")
 			return
@@ -705,7 +705,9 @@ def checkAllUserDatabases():
 					#print('------Download has failed-----',usrDBname, table )
 					addRecordToActionLogDB('--Auto update--', '--Download has failed--', usrDBname, table)
 					continue
-				isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, currentTableData,  reportUpdateCount = True)#perform data update
+				#change date format from /%m/%Y to %Y-%m-%d 
+				newValueListExport = customFunctions.changeDateFormat(currentTableData)
+				isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True)#perform data update
 				if isUpdated == True:
 					userConnected.countAllRecords(table, operator = '-', value = updateCount)
 					report = 'Add ' + str(updateCount) + ' records. ' + 'Starting from rowid > ' + str(userConnected.countAllRecords(table, operator = '-', value = updateCount))
@@ -748,7 +750,9 @@ def updateUserTables(usrDBname):
 				#print('------Download has failed-----',usrDBname, table )
 				addRecordToActionLogDB('--Auto update--', '--Download has failed--', usrDBname, table)
 				continue
-			isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, currentTableData,  reportUpdateCount = True)#perform data update
+			#change date format from /%m/%Y to %Y-%m-%d 
+			newValueListExport = customFunctions.changeDateFormat(currentTableData)
+			isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True)#perform data update
 			if isUpdated == True:
 				userConnected.countAllRecords(table, operator = '-', value = updateCount)
 				report = 'Add ' + str(updateCount) + ' records. ' + 'Starting from rowid > ' + str(userConnected.countAllRecords(table, operator = '-', value = updateCount))
