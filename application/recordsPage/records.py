@@ -19,7 +19,6 @@ from flask_login import current_user
 
 from .. import dbconn
 
-
 #---------------------pdf generatora library------------------------
 import pandas as pd
 import numpy as np
@@ -245,12 +244,13 @@ def requesReturn():
 	recievedData = request.get_json()
 	username = request.args.get('username')#username to identify database
 	table = request.args.get('table')
-	
+	print("---------------------searchNewRequestData function --------------------------------------")
+	print("----recievedData----->",recievedData)
 	#print(recievedData)
 	if len(recievedData) > 0:
 		colNamesList = []
 		operatorList = []
-		filterValueList = []
+		filterValueList = []		
 		for row in range(len(recievedData)):
 			#if row == (len(recievedData) -1):
 			#	continue
@@ -258,10 +258,11 @@ def requesReturn():
 			colNamesList.append(recievedData[row]['columnName'])
 			operatorList.append(recievedData[row]['operator'])
 			filterValueList.append(recievedData[row]['filterValue'])
-		#print('colNamesList:		',colNamesList)
-		#print('operatorList:		',operatorList)
-		#print('filterValueList:		',filterValueList)
-		
+		#check for dates in filter values
+		#for item in filterValueList:
+		#	if customFunctions.is_date(item) == True:
+		#		print("------------this is date---------->", item)
+		#	else: print("------------------this is not date----------->", item)
 		userToEdit = User.query.filter_by(username=username).first()
 		userConnected = dbconn.user()
 		userConnected.connectToDB(userToEdit.database)
@@ -271,7 +272,7 @@ def requesReturn():
 		global userDataSelectedData
 		userDataSelectedData[username] = [tableData, selectedData]
 		#print(userDataSelectedData)
-	userConnected.conn.close()#close sqlite connection
+		userConnected.conn.close()#close sqlite connection
 	return jsonify({
 			"info"   :  "no_errors",
 			})

@@ -15,6 +15,8 @@ from .. import customFunctions
 
 import os
 
+import datetime
+
 #---------------- config data-------------------------------------
 import sys
 sys.path.append("...")
@@ -260,7 +262,10 @@ def addRecords():
 			else: valueList.append(valueListRaw[item])
 		valueListExport.append(valueList)
 	
-	isUpdated, recordUploadCount = userConnected.updateTableUniqueRecords(table, valueListExport, reportUpdateCount = True, specificKeyList = keyList)#perform data update
+	#change date format from /%m/%Y to %Y-%m-%d 
+	newValueListExport = customFunctions.changeDateFormat(valueListExport)
+	
+	isUpdated, recordUploadCount = userConnected.updateTableUniqueRecords(table, newValueListExport, reportUpdateCount = True, specificKeyList = keyList)#perform data update
 
 	if isUpdated == False:
 		userConnected.conn.close()#close sqlite connection
