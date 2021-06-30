@@ -123,7 +123,8 @@ def editUser():
 	return render_template(
 			'editUser.html',
 			data = selectedUserData,
-			username = userToEdit.username,
+			username = userToEdit.username,#user to edit username
+			usernameAdmin = current_user.username,#admin who edit username
 			database = userToEdit.database,
 			created = userToEdit.created,
 			lastLogin = userToEdit.lastLogin,
@@ -213,6 +214,8 @@ def returnData():
 	for loop in range(len(columnNamesRaw)):
 		columnNames.append(columnNamesRaw[loop][1])
 	userConnected.conn.close()#close sqlite connection
+	print("--------------------requestedData------------------------>", requestedData)
+	print("--------------------columnNames------------------------>", requestedData)
 	return jsonify({
 		"info"   :  requestedData,
 		"columnNames"   :  columnNames,

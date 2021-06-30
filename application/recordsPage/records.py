@@ -156,6 +156,7 @@ def recordsTab():
 	if len(databaseTables) > 0:
 		databaseData = userConnected.selectData(databaseTables[0],listColumnNames = ['rowid'], listSearchValues = [50], listOperators = ['<'], selectCustomFromAllColumns = True, printOnConsole = False)
 		data = [loop[0] for loop in databaseData]
+		
 		info = customFunctions.unique(data)
 		tableData = userConnected.getTableInfo(databaseTables[0])
 		columnNames = [loop[1] for loop in tableData]
@@ -171,12 +172,16 @@ def recordsTab():
 			loopNr += 1
 			variable.append(cellsDict)
 		
-		columnNamesWithoutSpaces = []
-		for word in columnNames:
-			columnNamesWithoutSpaces.append(word.replace(" ",""))
+		#columnNamesWithoutSpaces = []
+		#for word in columnNames:
+		#	columnNamesWithoutSpaces.append(word.replace(" ",""))
 		colNamesExport = []
-		for (titleName,fieldName) in zip(columnNames,columnNamesWithoutSpaces):
-			colNamesExport.append({'title':titleName, 'field':fieldName})
+		#for (titleName,fieldName) in zip(columnNames,columnNamesWithoutSpaces):
+		#	colNamesExport.append({'title':titleName, 'field':fieldName})
+			
+		for loop in range(len(columnNames)):
+			colNamesExport.append({'title':columnNames[loop], 'field':columnNames[loop]})
+		
 		
 		userConnected.conn.close()
 
@@ -194,6 +199,8 @@ def recordsTab():
 						"info"   :  "success"
 					})
 		session['currentTable'] = databaseTables[0]
+		#print("databaseData -------------------------------->", columnNames)
+		#print("databaseData -------------------------------->", variable)
 		return render_template(
 		'recordsTab.html',
 		userLevel = userLevel, tableData = variable, columnNames = columnNames, colNamesExport = colNamesExport, currTable = databaseTables[0], username = current_user.username

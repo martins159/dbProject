@@ -1,7 +1,7 @@
 {% extends 'layoutAdmin.html' %}
 
 {% block navig %}
-	<a class = "active" href="" style="float: right;"> Sveiki {{username}}!</a>
+	<a class = "active" href="" style="float: right;"> Sveiki {{usernameAdmin}}!</a>
 	<a class = "active" href="{{ url_for('auth_bp.logout') }}" style="float: right;"><i class="fa fa-times"></i> Iziet</a>
 {% endblock %}
 
@@ -403,7 +403,7 @@ function pushDataTabulator(data){
 	var rowIndex = table.getDataCount();
 	var colHeaders = data[0];
 	var frstLine = data[1];
-	console.log(frstLine);
+	//console.log(frstLine);
 	for (var i=0; i<colHeaders.length; i++){
 			var dataType = "text";
 			if (isNaN(frstLine[i]) == false){//check if is number
@@ -452,8 +452,10 @@ function pushDataTabulator(data){
           var lines = contents.split("\n"), headers = [], frstLine = [], output = [];
 		  //check if file contain headers
 		  headersIsPresent = false;
+		  
 		  var frstLineData = lines[0].split(",");
 		  var scndLineData = lines[1].split(",");
+		  
 		  for (var i=0; i<frstLineData.length; i++){
             var frstLine = "text";
 			var scndLine = "text";
@@ -502,7 +504,7 @@ function pushDataTabulator(data){
 				var currentData = lines[i].split(",");
 				var pushLine = true;
 				for (var loop=0; loop<(colNamesExport.length); loop++){
-					console.log(currentData[loop]);
+					//console.log(currentData[loop]);
 					if (currentData[loop] === void 0){pushLine=false; break;}//if there is undefined case then break out and dont append this line 
 					if (currentData[loop].indexOf('"') >= 0){//check if string contain double qoutes '"' and remove them
 						//var newString = currentData[loop].replace('"','');
@@ -567,6 +569,7 @@ function pushDataTabulator(data){
 				for (var i=0; i<columnNames.length; i++){
 				colNamesExport.push({title:(columnNames[i]), field:columnNames[i], editor:"input", width:100});
 			   }
+			
 			 table2.setColumns(colNamesExport);
 			table2.setData(dataExport).then(function(){
 			if(recievedData === undefined || recievedData.length == 0){alert('Table is empty');}
