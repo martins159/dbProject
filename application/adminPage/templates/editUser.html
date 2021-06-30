@@ -1,7 +1,7 @@
 {% extends 'layoutAdmin.html' %}
 
 {% block navig %}
-	<a class = "active" href="" style="float: right;"> Sveiki {{usernameAdmin}}!</a>
+	<a class = "active" href="" style="float: right;"> Sveiki {{username}}!</a>
 	<a class = "active" href="{{ url_for('auth_bp.logout') }}" style="float: right;"><i class="fa fa-times"></i> Iziet</a>
 {% endblock %}
 
@@ -10,20 +10,21 @@
 <script type="text/javascript" src="https://unpkg.com/tabulator-tables@4.8.4/dist/js/tabulator.min.js"></script>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"</script>
 <script type="text/javascript" src="https://requirejs.org/docs/release/2.3.5/minified/require.js"></script>
-
-<p style="margin-top:15px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">Lietotājs: {{username}}</p>
+<fieldset style="background-color:#e8e8e8; margin-top:10px; margin-bottom:10px;">
+<p style="margin-top:15px; font-family:sans-serif; font-weight:bold; color: dodgerblue; background-color:#dbdbdb;">Lietotājs: {{username}}</p>
 {% if database == None %}
-    <p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">None (User have no attached database, it must be to make any interaction)</p>
+    <p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue; background-color:#dbdbdb;">None (User have no attached database, it must be to make any interaction)</p>
 {% else %}
-    <p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">Datubāze: {{database}}</p>
+    <p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue; background-color:#dbdbdb;">Datubāze: {{database}}</p>
 {% endif %}
-<p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">Izveidots: {{created}}</p>
-<p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">Pēdējo reizi aktīvs: {{lastLogin}}</p>
-<p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue;">{{data}}</p>
-<fieldset class="inlineParent" style="margin-top:5px; background-color:#c7eeff;">
+<p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue; background-color:#dbdbdb;">Izveidots: {{created}}</p>
+<p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue; background-color:#dbdbdb;">Pēdējo reizi aktīvs: {{lastLogin}}</p>
+<p style="margin-top:2px; font-family:sans-serif; font-weight:bold; color: dodgerblue; background-color:#dbdbdb;">{{data}}</p>
+</fieldset>
+<fieldset class="inlineParent" style="margin-top:5px; background-color:#e8e8e8;">
 	<legend>Izveidot tabulu:</legend>
 	<fieldset>
-		<legend>Manuālā datu ievade:</legend>
+		<p>Manuālā datu ievade:</p>
 		<input type="text" id="colName" name="fname" placeholder="Kolonnas nosaukums" style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;">
 		<select id="datatypeDropdwn" required>
 			<option value="">Izvēlēties datu tipu</option>
@@ -36,7 +37,7 @@
 		
 	</fieldset>
 	<fieldset>
-	<legend>Virsraksti no csv faila:</legend>
+	<p>Virsraksti no csv faila:</p>
 	<input type="file" name="File Upload" id="txtFileUpload1" accept=".csv"/>
 	</fieldset>
 	<br>
@@ -46,7 +47,7 @@
 <div id='createNewTable' style="margin-top:10px; width:90%; display:block; margin-left: auto; margin-right: auto; max-width: 1200px;"></div>
 </fieldset>
 <br>
-<fieldset class="inlineParent" style="margin-top:5px;">
+<fieldset class="inlineParent" style="margin-top:5px; background-color:#e8e8e8;">
 	<legend>Rediģēt lietotāja tabulas datus:</legend>
 	<select id="usrTable" required>
 		<option value="">Izvēlēties tabulu</option>
@@ -69,7 +70,7 @@
 	<div id='userDataPreview' style="margin-top:10px; width:90%; display:block; margin-left: auto; margin-right: auto; max-width: 1200px;"></div>
 </fieldset>
 <br>
-<fieldset style="margin-top:5px;">
+<fieldset style="margin-top:5px; background-color:#e8e8e8;">
 	<legend>Piešķirt lietotāja tabulai url:</legend>
 	<select id="usrTableUrl" required>
 			<option value="">Izvēlēties tabulu</option>
@@ -403,7 +404,7 @@ function pushDataTabulator(data){
 	var rowIndex = table.getDataCount();
 	var colHeaders = data[0];
 	var frstLine = data[1];
-	//console.log(frstLine);
+	console.log(frstLine);
 	for (var i=0; i<colHeaders.length; i++){
 			var dataType = "text";
 			if (isNaN(frstLine[i]) == false){//check if is number
@@ -452,10 +453,8 @@ function pushDataTabulator(data){
           var lines = contents.split("\n"), headers = [], frstLine = [], output = [];
 		  //check if file contain headers
 		  headersIsPresent = false;
-		  
 		  var frstLineData = lines[0].split(",");
 		  var scndLineData = lines[1].split(",");
-		  
 		  for (var i=0; i<frstLineData.length; i++){
             var frstLine = "text";
 			var scndLine = "text";
@@ -504,7 +503,7 @@ function pushDataTabulator(data){
 				var currentData = lines[i].split(",");
 				var pushLine = true;
 				for (var loop=0; loop<(colNamesExport.length); loop++){
-					//console.log(currentData[loop]);
+					console.log(currentData[loop]);
 					if (currentData[loop] === void 0){pushLine=false; break;}//if there is undefined case then break out and dont append this line 
 					if (currentData[loop].indexOf('"') >= 0){//check if string contain double qoutes '"' and remove them
 						//var newString = currentData[loop].replace('"','');
@@ -569,7 +568,6 @@ function pushDataTabulator(data){
 				for (var i=0; i<columnNames.length; i++){
 				colNamesExport.push({title:(columnNames[i]), field:columnNames[i], editor:"input", width:100});
 			   }
-			
 			 table2.setColumns(colNamesExport);
 			table2.setData(dataExport).then(function(){
 			if(recievedData === undefined || recievedData.length == 0){alert('Table is empty');}
@@ -683,7 +681,8 @@ document.getElementById("requestFromUrl").addEventListener('click', requestDataF
 		padding: 5px 5px 5px 5px;
 	}
 	fieldset{
-		border:5px solid dodgerblue;
+		border:5px solid #e8e8e8;
+		border-radius:25px;
 		display:block; 
 		margin-left:auto;
 		margin-right:auto;
@@ -703,6 +702,11 @@ document.getElementById("requestFromUrl").addEventListener('click', requestDataF
 		border: 0px;
 		padding: 5px 5px 5px 5px;
 		margin-top:5px;
+	}
+	legend {
+	  	background-color:white;
+		border-radius:25px;
+		padding:5px;
 	}
 	textarea {
 	   resize: none;

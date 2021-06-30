@@ -13,7 +13,7 @@
     <form method="POST" action="/login" class="login_form">
       {{ form.csrf_token }}
 
-      <fieldset class="username">
+      <fieldset class="username" style="font-family:sans-serif;">
         {{ form.username.label }}
         {{ form.username(placeholder='Lietotājvārds') }}
         {% if form.username.errors %}
@@ -24,7 +24,7 @@
         {% endif %}
       </fieldset>
 
-      <fieldset class="password">
+      <fieldset class="password" style="font-family:sans-serif;">
         {{ form.password.label }}
         {{ form.password(placeholder='Parole') }}
         {% if form.password.errors %}
