@@ -51,6 +51,10 @@ class User(UserMixin, db.Model):
         db.Integer,
         unique=False
     )
+    isActive = db.Column(
+        db.String(60),
+        unique=False
+    )
 
     def set_password(self, password):
         """Create hashed password."""

@@ -17,6 +17,7 @@
     {% endfor %}
   </select> -->
   <button type="button" id="selectedUsr" >Rediģēt izvēlēto lietotāju</button>
+  <button type="button" id="changeUserStatus" >Mainit lietotāja statusu</button>
   <button type="button" id="selectedUsrDelete" title="Lietotājs tiks dzēsts ar viņa datubāzi un visiem tajā esošiem datiem">Dzēst izvēlēto lietotāju</button>
   <button type="button" id="login-signup">Reģistrēt jaunu lietotāju</button>
   <button type="button" id="recordsExample">Atskaites piemērs</button>
@@ -325,11 +326,33 @@ document.getElementById("selectedUsrDelete").addEventListener("click", function(
 		});
 	
 	  } 
-
+});
 	
-	//console.log(String(username));
-	//return;
-
+document.getElementById("changeUserStatus").addEventListener("click", function(){
+	
+	var rowData = retrieveSelectedRow();
+	if (rowData == ''){
+		alert('Atlasiet lietotāju, lai mainitu tā statusu.');
+		return;
+		}
+	var username = rowData[0]['username'];
+	var currStatus = rowData[0]['isActive'];
+	var question = "";
+	if (currStatus == 1){question = "Vai vēlaties mainit lietotaja statusu uz: " + "neaktivs" + " ?";}
+	else {question = "Vai vēlaties mainit lietotaja statusu uz: " + "aktivs" + " ?";}
+	if (confirm(question)) {
+			$.ajax({
+		  type: "POST",
+		  contentType: "application/json; charset=utf-8",
+		  url: "/editUserChangeUserStatus?username=" + String(username) + '&currStatus=' + String(currStatus),
+		  //data: JSON.stringify(tableNames),
+		  success: function (data) {
+		   reloadPage();
+		  },
+		  dataType: "json"//datatype ajax are expecting from response, if 'text' then it will be as string not as dictionary
+		});
+	
+	  } 
 });
 
 // --------------------------AJAX script for info sending to python on POST event ------------------------

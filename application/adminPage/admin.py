@@ -52,7 +52,7 @@ def manageUsers():
 		#userConnected = dbconn.user('tester')
 	
 	#request collumns to send to browser
-	columnNames = ['id','username','email','name','created','lastLogin','database']
+	columnNames = ['id','username','email','name','isActive','created','lastLogin','database']
 	userConnected = dbconn.user()
 	#print("username------------>",userConnected.username)
 	userConnected.connectToDB('userList')
@@ -95,6 +95,8 @@ def manageUsers():
 @admin_bp.route('/editUser', methods=['GET','POST'])
 @login_required
 def editUser():
+	if current_user.isAdmin == False:
+		return render_template('notAdmin.html')
 	username = request.args.get('username')
 	if username == None:
 		return ('', 204)#HTTP 'empty response
@@ -124,7 +126,7 @@ def editUser():
 		userConnected.conn.close()#close sqlite connection
 	return render_template(
 			'editUser.html',
-			data = selectedUserData,
+			#data = selectedUserData,
 			username = userToEdit.username,#user to edit username
 			usernameAdmin = current_user.username,#admin who edit username
 			database = userToEdit.database,
@@ -412,5 +414,25 @@ def deleteUserData():
 			"info"   :  "Data got succesfully!"
 		})
 
+@app.route("/editUserChangeUserStatus", methods=['GET','POST'])
+def changeUsrStatus():
+	username = request.args.get('username')#username to identify database
+	currStatus = request.args.get('currStatus')
+	nextStatus = None
+	if currStatus == "1": nextStatus = 0
+	else: nextStatus = 1
+	print('----------------username------------->',username)
+	print('----------------currStatus------------->',currStatus)
+	print('----------------nextStatus------------->',nextStatus)
+	userToEdit = User.query.filter_by(username=username).first()
+	userConnected = dbconn.user()
+	userConnected.connectToDB('userList')
+	commandToExecute = "UPDATE flaskloginUsers SET isActive = " + str(nextStatus) + " WHERE username = " + "'" + username + "'"
+	userConnected.cur.execute(commandToExecute)
+	userConnected.conn.commit()
+	userConnected.conn.close()#close sqlite connection
+	return jsonify({
+		"info"   :  "Status changed!",
+	})
 
 

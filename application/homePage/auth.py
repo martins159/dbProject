@@ -67,7 +67,8 @@ def signup():
                 #created=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 created=datetime.now(),
 				database=databaseName,
-				isAdmin = 0
+				isAdmin = 0,
+				isActive = 1
             )
             user.set_password(form.password.data)
             db.session.add(user)
@@ -103,6 +104,10 @@ def login():
     # Validate login attempt
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
+        #check if user account is active or it is admin
+        if user.isActive == 0 and user.isAdmin == 0:
+            flash('Your account is innactive, please conntact admin')
+            return redirect(url_for('auth_bp.login'))
         if user and user.check_password(password=form.password.data):
             login_user(user)
             user.lastLogin = datetime.now()
