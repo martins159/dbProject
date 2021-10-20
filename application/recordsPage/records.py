@@ -495,6 +495,7 @@ def pdfConfig():
 		if strReplace in strValue:
 			strValue = strValue.replace('"','')
 		paramsListExport.append({'1':key,'2':strValue,'3':idNumber})
+	graphTag =str( databaseData_txt[-1][32])
 
 	userConnected_txt.conn.close()
 	#print('--------------------export-------------------------')
@@ -531,11 +532,12 @@ def pdfConfig():
 			date_time_obj2 = cycleStartTime
 			date_time_obj3 = datetime.datetime.strptime(pdfParamsDict['UTC Time'], '%H:%M:%S')
 			for varVal in databaseData:
-				if varVal[0] == 'Autoclave pressure scaled':
-					if cycleDate in varVal[1]:
-						date_time_obj1 = datetime.datetime.strptime(varVal[1], '%d/%m/%Y %H:%M')
-						#print(date_time_obj1.date())
-						#print(date_time_obj1.time())
+				if varVal[0] == graphTag:
+					date_time_obj1 = datetime.datetime.strptime(varVal[1], '%d/%m/%Y %H:%M')
+					date_time_obj1DT = date_time_obj1.strftime('%Y-%m-%d')
+					#print(date_time_obj1.date())
+					#print(date_time_obj1.time())
+					if cycleDate in date_time_obj1DT:
 						if date_time_obj1.time() >= date_time_obj2.time():  #obj1 jābūt mazākam par obj2
 							graphXValList.append(date_time_obj1.time())
 							graphYValList.append(varVal[2])
@@ -776,7 +778,7 @@ def autoclave_pdf():
 	databaseData_pdf = userConnected_pdf.selectData(current_table_pdf,selectAll = True,printOnConsole = False)
 
 	#-------------------------Grafika pievienošana--------------------------------
-	if databaseData_pdf[-1][29] == 'true':
+	if databaseData_pdf[-1][29] == '1':
 		pdf.add_page()
 		pdf.titles('Cikla {} grafiks'.format(databaseData_pdf[-1][30]))
 		pdf.lines(25)
