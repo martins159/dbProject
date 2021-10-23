@@ -320,6 +320,7 @@ def updateTableUrl():
 		tablesUpdated = 0
 		for item in selectedData:
 			currentTableData, currentTableNames = dbconn.downloadCSV(item[1])
+			#check if downloaded column names from names and datatype mach with database  <<------------------------------------------------ 
 			#print(currentTableData)
 			#print("------------------------------------------------------item[0]-------->",item[0])
 			isUpdated = userConnected.updateTableUniqueRecords(item[0], currentTableData)#perform data update
