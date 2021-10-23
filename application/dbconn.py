@@ -242,7 +242,7 @@ class user(object):
 		dataToExport = dataToExport[:-1] #remove last char
 		stringsToJoin = ("INSERT INTO ", nameOfTable, " ", colNamesToExport , " VALUES (", dataToExport, " )")
 		commandToExecute = "".join(stringsToJoin)
-		#print(commandToExecute)
+		print(commandToExecute)
 		self.cur.execute(commandToExecute)
 		#print('line writtent to ', nameOfTable)
 		#self.cur.execute("INSERT INTO rsTrade VALUES ('28.07.2019','Cannonballs',29999,471,496,749975,0.7499)")

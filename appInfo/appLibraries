@@ -30,9 +30,7 @@ sudo pip install virtualenv
 sudo virtualenv venv
 source venv/bin/activate 
 pip install -r requirementsVenv.txt
-
-----------------------------------------------------------------------------------------------------------------
---------------------Github console commands - create working directory for git----------------------------------
+--------------------Github console commands - create working directory for git--------------------------------------------------------
 git init
 git add .
 git commit -m "Add index.html"
@@ -46,22 +44,9 @@ git push origin main
 ---------------------pull from git------------------------
 git pull origin main	# if origin is added
 git pull <remote repo>	# if origin is not added, where '<remote repo>' is reposit link
--------------------if there someone else made uppdate already and git refuses push request---------------------
+-------------------if there someone else made uppdate already and git refuses push request-------------------
 git pull --rebase origin main	#and after this make another push request
--------------------if there is need to delete file from project globaly----------------------------------------
-git rm /path to file/
-git commit -m "some file deleted"
-git push
--------------------to create exclusions for files - to not update them in git----------------------------------
-1. create .gitignore file in main git project directory
-	touch .gitignore
-2. add files to it simply by echo comand or copy manualy
-	echo debug.log >> .gitignore
-3. to add multiple same extension files (in example all .log files in someFolder directory)
-	echo ./someFolder/*.log >> .gitignore
-	
----------------------------------------------------------------------------------------------------------------
---------------------Apache debug comands ----------------------------------------------------------------------
+--------------------Apache debug comands -------------------------------------------------
 sudo tail -100 /var/log/apache2/error.log
 sudo service apache2 restart
 /usr/sbin/apache2ctl -S	#to see current config
