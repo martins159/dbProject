@@ -320,9 +320,26 @@ def updateTableUrl():
 		tablesUpdated = 0
 		for item in selectedData:
 			currentTableData, currentTableNames = dbconn.downloadCSV(item[1])
+			tableInfoRaw = userConnected.getTableInfo(item[0]) #get info about table from database 
+			#print("------------------------------------tableInfoRaw-------------->",tableInfoRaw)
+			dataRowLenght = len(currentTableData)
+			for loop in range(dataRowLenght):
+				#print(currentTableData[0][loop], tableInfoRaw[loop][2])
+				#isNumeric = currentTableData[0][loop].isnumeric()
+				isFloat = customFunctions.isFloat(currentTableData[0][loop])
+				if isFloat == False and (tableInfoRaw[loop][2] == 'integer' or tableInfoRaw[loop][2] == 'real'):
+					reportString = "Table update aborted. Downloaded data datatypes does not mach - expected integer or float but got text . Problem found at column with name: '" + tableInfoRaw[loop][1] + "' "
+					return jsonify({
+                                                "info"   :  reportString
+						})
+				else:
+					continue
+
+				#print(isFloat,isNumeric,currentTableData[0][loop], tableInfoRaw[loop][2])
+
 			#print(currentTableData)
 			#print("------------------------------------------------------item[0]-------->",item[0])
-			isUpdated = userConnected.updateTableUniqueRecords(item[0], currentTableData)#perform data update
+			isUpdated = userConnected.updateTableUniqueRecords(item[0], currentTableData) #perform data update
 			if isUpdated == True: tablesUpdated += 1
 		import os
 		cwd = os.getcwd()
