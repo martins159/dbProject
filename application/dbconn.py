@@ -586,7 +586,7 @@ def downloadCSV(url):
 		#return
 	else: print('---------------> something went wrong with Operating system detection <--------------')
 	#-------------------------------------------------------Open, read and delete file -------------------------------------------------------------------
-	print('-------------------------------->',os.getcwd())
+	#print('-------------------------------->',os.getcwd())
 	pathToCSV = workingDirectory + "/" + outputName
 	rawData = []
 	with open(pathToCSV) as f:# cvs reader object must be created inside with statement to succesfully delete the file after it
