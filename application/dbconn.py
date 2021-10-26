@@ -211,17 +211,11 @@ class user(object):
 		colNamesToExport = colNamesToExport[:-1] #remove last char
 		colNamesToExport += ")"
 
-
-
 		#get table info
 		tableInfo = self.getTableInfo(nameOfTable)
 		#print(tableInfo)
 		#assemble string for sqlite, table info is needed for datatypes, text items must be in: ''
 		dataToExport = ""
-		#print('table info len: ',len(tableInfo))
-		#print('data list len: ',len(dataList))
-		#print(keysList)
-		#print(dataList)
 		for loop in range(len(dataList)):
 			#print('datalist data loop: ',loop,'  ', dataList[loop])
 			#currentColData = [(tableInfo[loop]) for x in keysList[loop] for y in tableInfo if str(x) == str(y[1])]
@@ -242,7 +236,7 @@ class user(object):
 		dataToExport = dataToExport[:-1] #remove last char
 		stringsToJoin = ("INSERT INTO ", nameOfTable, " ", colNamesToExport , " VALUES (", dataToExport, " )")
 		commandToExecute = "".join(stringsToJoin)
-		print(commandToExecute)
+		#print(commandToExecute)
 		self.cur.execute(commandToExecute)
 		#print('line writtent to ', nameOfTable)
 		#self.cur.execute("INSERT INTO rsTrade VALUES ('28.07.2019','Cannonballs',29999,471,496,749975,0.7499)")
@@ -429,8 +423,8 @@ class user(object):
 		found = False
 		if len(tableData) == 0:#if table is empty then skip check part
 			found = True
-		print('table data len: ', len(tableData))
-		print('current data len', len(currentData))
+		#print('table data len: ', len(tableData))
+		#print('current data len', len(currentData))
 		for importRow in range(len(currentData)):
 			for tableRow in range(len(tableData)):
 				if ''.join([str(item) for item in tableData[tableRow] ]) == ''.join(currentData[importRow]):
