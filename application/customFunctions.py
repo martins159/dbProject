@@ -66,7 +66,7 @@ def changeDateFormat(itemList):
 	for currlist in range(len(itemList)):
 		for index in dateItemsIndexes:
 			#print("------------------itemList[currlist][index]----------------->",itemList[currlist][index])
-			item = datetime.strptime(itemList[currlist][index], '%d/%m/%Y')
+			item = datetime.strptime(itemList[currlist][index], '%m/%d/%Y')
 			
 			newList[currlist][index] = item.strftime('%Y-%m-%d')
 		

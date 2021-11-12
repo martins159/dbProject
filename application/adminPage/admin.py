@@ -179,14 +179,14 @@ def createTable():
 	#userConnected.cur.execute(commandToExecute)
 	#------------------------------------------------Create pdf text table ---------------------------------------------------------------------
 	TextTableName = tableName + '_texts'
-	IdNrList = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33] #0 iet virsrakstā un faila nosaukumā cikla nr. #30 vai grafiku vajag true/false #31 grafika lielums #32 grafika lieluma mervieniba
+	IdNrList = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39] #0 iet virsrakstā un faila nosaukumā cikla nr. #30 vai grafiku vajag true/false #31 grafika lielums #32 grafika lieluma mervieniba
 	IdNrListStr = [str(item) for item in IdNrList]
 	newDataTypes2 = ["TEXT" for item in IdNrListStr]
 	userConnected.createTable(TextTableName, IdNrListStr, newDataTypes2, listType = True)
 	#-----------------------------------------------Create graphics table------------------------------------------------------------------------
 	#CREATE TABLE  test_graphics( id INTEGER PRIMARY KEY,username STRING UNIQUE NOT NULL);
 	graphTableName = tableName + '_graphics'
-	commandToExecute = "CREATE TABLE " + graphTableName + " (VarName STRING, TimeString STRING, VarValue REAL, Validity INTEGER, Time_ms REAL)"
+	commandToExecute = "CREATE TABLE " + graphTableName + " (Record INTEGER, Date STRING, 'UTC Time' STRING, '' INTEGER)"
 	userConnected.cur.execute(commandToExecute)
 	#---------------------------------------------------------add record to actionLog.db--------------------------------------------------------------------
 	currentActionInput = " Created new table with name:  " + tableName

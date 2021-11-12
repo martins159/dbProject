@@ -213,7 +213,8 @@ class user(object):
 
 		#get table info
 		tableInfo = self.getTableInfo(nameOfTable)
-		#print(tableInfo)
+		#print('-------------------tablInfo------------------->',tableInfo)
+		#print('-------------------keysList------------------->',keysList)
 		#assemble string for sqlite, table info is needed for datatypes, text items must be in: ''
 		dataToExport = ""
 		for loop in range(len(dataList)):
@@ -224,8 +225,10 @@ class user(object):
 			currentColData = None
 			for item in tableInfo:
 				if item[1] == keysList[loop]: currentColData = item
+			#print('----------------currentColData------------->',currentColData)
 			if currentColData[2] == 'text' or currentColData[2] == 'STRING' or currentColData[2] == 'TEXT':
-				if "'" in dataList[loop]: dataList[loop] = dataList[loop].replace("'", "")
+				quotes = "'"
+				if quotes in dataList[loop]: dataList[loop] = dataList[loop].replace(quotes, "")
 				dataToExport += "'"
 				dataToExport += str(dataList[loop])
 				dataToExport += "'"
@@ -234,6 +237,7 @@ class user(object):
 				dataToExport += str(dataList[loop])
 				dataToExport += ","
 		dataToExport = dataToExport[:-1] #remove last char
+		print(dataToExport)
 		stringsToJoin = ("INSERT INTO ", nameOfTable, " ", colNamesToExport , " VALUES (", dataToExport, " )")
 		commandToExecute = "".join(stringsToJoin)
 		#print(commandToExecute)
@@ -658,6 +662,7 @@ def autoUpdateDatabases():
 	first_timeRaw = datetime.strptime(str(first_timeRaw), '%Y-%m-%d %H:%M:%S.%f')#convert string to datetime object
 	first_time = first_timeRaw - timedelta(days=1)
 	#checkAllUserDatabases()#---<<-------izdzest so pec tam
+	print('--------Starting autoUpdateDatabases paralel process -----------')
 	while True:
 		#print('-------PAralel process------', randIdentificator)
 		if customFunctions.compareTimeDifference(first_time, timePeriodSeconds = 0, timePeriodDays = 1) == True:
@@ -671,6 +676,16 @@ def autoUpdateDatabases():
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#--------------------This function is to launch "autoUpdateDatabases" -----------------------------------------------------
+def paralelAutoUpdateProcess():
+        import multiprocessing
+        new_process = multiprocessing.Process(target=autoUpdateDatabases)
+        new_process.daemon=True
+        new_process.start()
+#--------------------------------------------------------------------------------------------------------------------------
+
+
 
 def checkAllUserDatabases():
 	columnNames = ['username','database']

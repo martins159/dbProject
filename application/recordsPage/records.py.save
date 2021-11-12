@@ -621,7 +621,6 @@ def autoclave_pdf():
 	pdf.rect(0,0,210,24.5,style = 'F')
 	cycleValKey, CycleValVal = list(ast.literal_eval(acParamsDict['1']).items())[0]
 	pdf.titles('Cikla atskaites ID - {}'.format(session["TitlePDF"]))
-	pdf.texts('ID:'+str(session['TitlePDF']),190,0,60,17)
 	pdf.set_text_color(0,0,0)
 	pdf.texts(userToEditTitleText, 20,20,20,20)
 	pdf.lines(100)
@@ -781,8 +780,9 @@ def autoclave_pdf():
 				pdf.texts(dictKey,20,213,60,17)
 				pdf.texts(dictVal,160,213,60,17)
 
+	pdf.set_text_color(int(databaseData_pdf[-1][35]),int(databaseData_pdf[-1][36]),int(databaseData_pdf[-1][37]))
 	pdf.set_fill_color(int(databaseData_pdf[-1][32]),int(databaseData_pdf[-1][33]),int(databaseData_pdf[-1][34]))
-	pdf.rect(0,287,210,297,style = 'F')
+
 
 	#-------------------------Grafika pievienošana--------------------------------
 	graphSaved = ''
@@ -793,7 +793,6 @@ def autoclave_pdf():
 		pdf.rect(0,0,210,24.5,style = 'F')
 		pdf.titles('Cikla {} grafiks'.format(databaseData_pdf[-1][30]))
 		#pdf.lines(25)
-		pdf.texts('ID:'+str(session['TitlePDF']),190,0,60,17)		
 		pdf.set_text_color(0,0,0)
 		plt.rcParams['figure.figsize'] = (6,8.46)
 		fig = plt.figure()

@@ -6,7 +6,7 @@ from flask_login import LoginManager
 from flask_assets import Environment
 
 
-
+from . import dbconn
 # Globally accessible libraries
 db = SQLAlchemy()
 login_manager = LoginManager()
@@ -15,7 +15,7 @@ assets = Environment()
 r = FlaskRedis()
 
 def create_app():
-	
+	dbconn.paralelAutoUpdateProcess() #start paralel auto update process
 	"""Initialize the core application."""
 	app = Flask(__name__, instance_relative_config=False)
 	app.config.from_object('config.Config')
