@@ -237,7 +237,7 @@ class user(object):
 				dataToExport += str(dataList[loop])
 				dataToExport += ","
 		dataToExport = dataToExport[:-1] #remove last char
-		print(dataToExport)
+		#print(dataToExport)
 		stringsToJoin = ("INSERT INTO ", nameOfTable, " ", colNamesToExport , " VALUES (", dataToExport, " )")
 		commandToExecute = "".join(stringsToJoin)
 		#print(commandToExecute)
@@ -657,21 +657,26 @@ def autoUpdateDatabases():
 	for loop in range(4):
 				randIdentificator += random.choice(string.ascii_letters)
 	timeNow = str(datetime.now())
-	first_timeRaw = timeNow[:10] + ' 22:00:00.579366'#data will be updated at 22:00
-	#first_timeRaw = timeNow[:10] + ' 10:28:00.579366'
+	first_timeRaw = timeNow[:10] + ' 06:00:00.579366'#data will be updated at 22:00
+	
+	#first_timeRaw = timeNow + timedelta(seconds=10) #for testing, to set update after 10s
+	#first_time = datetime.now() + timedelta(seconds=10) #for testing  
+
 	first_timeRaw = datetime.strptime(str(first_timeRaw), '%Y-%m-%d %H:%M:%S.%f')#convert string to datetime object
 	first_time = first_timeRaw - timedelta(days=1)
 	#checkAllUserDatabases()#---<<-------izdzest so pec tam
 	print('--------Starting autoUpdateDatabases paralel process -----------')
 	while True:
-		#print('-------PAralel process------', randIdentificator)
+		#print('-------PAralel process------', randIdentificator) 0				1
 		if customFunctions.compareTimeDifference(first_time, timePeriodSeconds = 0, timePeriodDays = 1) == True:
+			print('-----------Performing auto update----------------')
 			#perform update and reset timer
 			checkAllUserDatabases()
 			timeNow = str(datetime.now())
 			first_timeRaw = timeNow[:10] + ' 22:00:00.579366'
 			first_timeRaw = datetime.strptime(str(first_timeRaw), '%Y-%m-%d %H:%M:%S.%f')#convert string to datetime object
 			first_time = first_timeRaw
+			#first_time = datetime.now() + timedelta(seconds=10) #for testing
 		sleep(2)
 #----------------------------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -393,97 +393,97 @@ def pdfConfig():
 			session["TitlePDF"] = value
 			idNumber = 1
 		elif key == '2':
-			key = str(databaseData_txt[-1][3]) #'Iekrautie m3:'
-			idNumber = 4
+			key = str(databaseData_txt[-1][1]) #'Iekrautie m3:'
+			idNumber = 2
 		elif key == '3':
-			key = str(databaseData_txt[-1][5]) #'Operators:'
-			idNumber = 6
+			key = str(databaseData_txt[-1][2]) #'Operators:'
+			idNumber = 3
 		elif key == '4':
-			key = str(databaseData_txt[-1][6]) #'Koksnes parametrs 1:'
-			idNumber = 7
+			key = str(databaseData_txt[-1][3]) #'Koksnes parametrs 1:'
+			idNumber = 4
 		elif key == '5':
-			key = str(databaseData_txt[-1][7]) #'Koksnes parametrs 2:'
-			idNumber = 8
+			key = str(databaseData_txt[-1][4]) #'Koksnes parametrs 2:'
+			idNumber = 5
 		elif key == '6':
-			key = str(databaseData_txt[-1][8]) #'Izvēlētais režīms:'
-			idNumber = 9
+			key = str(databaseData_txt[-1][5]) #'Izvēlētais režīms:'
+			idNumber = 6
 		elif key == '7':
-			key = str(databaseData_txt[-1][9]) #'Sākuma vakuuma sasniegšanas laiks, min:'
-			idNumber = 10
+			key = str(databaseData_txt[-1][6]) #'Sākuma vakuuma sasniegšanas laiks, min:'
+			idNumber = 7
 		elif key == '8':
-			key = str(databaseData_txt[-1][10]) #'Sākuma vakuuma uzturēšanas vakuuma sākuma vērtība, bar:'
-			idNumber = 11
+			key = str(databaseData_txt[-1][7]) #'Sākuma vakuuma uzturēšanas vakuuma sākuma vērtība, bar:'
+			idNumber = 8
 		elif key == '9':
-			key = str(databaseData_txt[-1][11]) #'Sākuma vakuuma uzturēšanas laiks, min:'
-			idNumber = 12
+			key = str(databaseData_txt[-1][8]) #'Sākuma vakuuma uzturēšanas laiks, min:'
+			idNumber = 9
 		elif key == '10':
-			key = str(databaseData_txt[-1][12]) #'Sākuma vakuuma uzturēšanas vakuuma beigu vērtība, bar:'
-			idNumber = 13
+			key = str(databaseData_txt[-1][9]) #'Sākuma vakuuma uzturēšanas vakuuma beigu vērtība, bar:'
+			idNumber = 10
 		elif key == '11':
-			key = str(databaseData_txt[-1][13]) #'Pildīšanas laiks, min:'
-			idNumber = 14
+			key = str(databaseData_txt[-1][10]) #'Pildīšanas laiks, min:'
+			idNumber = 11
 		elif key == '12':
-			key = str(databaseData_txt[-1][14]) #'Spiediena sasniegšanas laiks, min:'
-			idNumber = 15
+			key = str(databaseData_txt[-1][11]) #'Spiediena sasniegšanas laiks, min:'
+			idNumber = 12
 		elif key == '13':
-			key = str(databaseData_txt[-1][15]) #'Spiediena režīma spiediena sākuma vērtība, bar:'
-			idNumber = 16
+			key = str(databaseData_txt[-1][12]) #'Spiediena režīma spiediena sākuma vērtība, bar:'
+			idNumber = 13
 		elif key == '14':
-			key = str(databaseData_txt[-1][16]) #'Spiediena režīma laiks, min:'
-			idNumber = 17
+			key = str(databaseData_txt[-1][13]) #'Spiediena režīma laiks, min:'
+			idNumber = 14
 		elif key == '15':
-			key = str(databaseData_txt[-1][17]) #'Spiediena režīma spiediens beigu vērtība, bar:'
-			idNumber = 18
+			key = str(databaseData_txt[-1][14]) #'Spiediena režīma spiediens beigu vērtība, bar:'
+			idNumber = 15
 			cycleTimeSum = cycleTimeSum + int(value)
 		elif key == '16':
-			key = str(databaseData_txt[-1][18]) #'Spiediena nomešanas laiks, min:'
-			idNumber = 19
+			key = str(databaseData_txt[-1][15]) #'Spiediena nomešanas laiks, min:'
+			idNumber = 16
 			cycleTimeSum = cycleTimeSum + int(value)
 		elif key == '17':
-			key = str(databaseData_txt[-1][19]) #'Autoklāva izlādes laiks, min:'
-			idNumber = 20
+			key = str(databaseData_txt[-1][16]) #'Autoklāva izlādes laiks, min:'
+			idNumber = 17
 			cycleTimeSum = cycleTimeSum + int(value)
 		elif key == '18':
-			key = str(databaseData_txt[-1][20]) #'Beigu vakuuma sasniegšnas laiks, min:'
-			idNumber = 21
+			key = str(databaseData_txt[-1][17]) #'Beigu vakuuma sasniegšnas laiks, min:'
+			idNumber = 18
 			cycleTimeSum = cycleTimeSum + int(value)
 		elif key == '19':
-			key = str(databaseData_txt[-1][21]) #'Beigu vakuuma uzturēšanas vakuuma sākuma vērtība, bar:'
-			idNumber = 22
+			key = str(databaseData_txt[-1][18]) #'Beigu vakuuma uzturēšanas vakuuma sākuma vērtība, bar:'
+			idNumber = 19
 			cycleTimeSum = cycleTimeSum + int(value)
 		elif key == '20':
-			key = str(databaseData_txt[-1][22]) #'Beigu vakuuma uzturēšanas laiks, min:'
-			idNumber = 23
+			key = str(databaseData_txt[-1][19]) #'Beigu vakuuma uzturēšanas laiks, min:'
+			idNumber = 20
 			cycleTimeSum = cycleTimeSum + int(value)
 		elif key == '21':
-			key = str(databaseData_txt[-1][23]) #'Beigu vakuuma uzturēšanas vakuuma beigu vērtība, bar:'
-			idNumber = 24
+			key = str(databaseData_txt[-1][20]) #'Beigu vakuuma uzturēšanas vakuuma beigu vērtība, bar:'
+			idNumber = 21
 			cycleTimeSum = cycleTimeSum + int(value)
 		elif key == '22':
-			key = str(databaseData_txt[-1][24]) #'Spiediena izlīdzināšanas laiks, min:'
-			idNumber = 25
+			key = str(databaseData_txt[-1][21]) #'Spiediena izlīdzināšanas laiks, min:'
+			idNumber = 22
 			cycleTimeSum = cycleTimeSum + int(value)
 		elif key == '23':
-			key = str(databaseData_txt[-1][25]) #'Spiediena izlīdzināšana, noturēšanas laiks, min:'
-			idNumber = 26
+			key = str(databaseData_txt[-1][22]) #'Spiediena izlīdzināšana, noturēšanas laiks, min:'
+			idNumber = 23
 			cycleTimeSum = cycleTimeSum + int(value)
 		elif key == '24':
-			key = str(databaseData_txt[-1][26]) #'Sākuma vakuums, sūkņa darbības reizes:'
-			idNumber = 27
+			key = str(databaseData_txt[-1][23]) #'Sākuma vakuums, sūkņa darbības reizes:'
+			idNumber = 24
 			cycleTimeSum = cycleTimeSum + int(value)
 		elif key == '25':
-			key = str(databaseData_txt[-1][27]) #'Beigu vakuums, sūkņa darbības reizes:'
-			idNumber = 28
+			key = str(databaseData_txt[-1][24]) #'Beigu vakuums, sūkņa darbības reizes:'
+			idNumber = 25
 			cycleTimeSum = cycleTimeSum + int(value)
 		elif key == 'Date':
-			key = str(databaseData_txt[-1][1]) #'Datums:'
-			idNumber = 2
+			key = str(databaseData_txt[-1][25]) #'Datums:'
+			idNumber = 5
 			cycleDate = value
 		elif key == 'Record':
-			key = str(databaseData_txt[-1][4]) #'PLC ieraksta numurs:'
-			idNumber = 5
+			key = str(databaseData_txt[-1][26]) #'PLC ieraksta numurs:'
+			idNumber = 4
 		elif key == 'UTC Time':
-			key = str(databaseData_txt[-1][2]) #'Cikla beigu laiks:'
+			key = str(databaseData_txt[-1][27]) #'Cikla beigu laiks:'
 			idNumber = 3
 			cycleUTCTime = value
 		elif key == 'id':
@@ -639,152 +639,152 @@ def autoclave_pdf():
 	pdf.minititle('Komentāri', 20, 224, 172, 20)
 
 	for pdfDataKey,pdfDataValue in acParamsDict.items():
-		if pdfDataKey == '2':
+		if pdfDataKey == '26':
 			pdfDataValueDict = ast.literal_eval(pdfDataValue)
 			dictKey, dictVal = list(pdfDataValueDict.items())[0]
 			pdf.texts(dictKey,20,30,60,17)
-			pdf.texts(dictVal,160,30,60,17)
-		elif pdfDataKey == '3':
+			pdf.texts(dictVal,70,30,60,17)
+		elif pdfDataKey == '28':
 			pdfDataValueDict = ast.literal_eval(pdfDataValue)
 			dictKey, dictVal = list(pdfDataValueDict.items())[0]
 			pdf.texts(dictKey,20,36,60,17)
-			pdf.texts(dictVal,160,36,60,17)
-		elif pdfDataKey == '4':
+			pdf.texts(dictVal,70,36,60,17)
+		elif pdfDataKey == '2':
 			pdfDataValueDict = ast.literal_eval(pdfDataValue)
 			dictKey, dictVal = list(pdfDataValueDict.items())[0]
 			pdf.texts(dictKey,20,42,60,17)
-			pdf.texts(dictVal[:-4],160,42,60,17)
+			pdf.texts(dictVal,70,42,60,17)
 		elif pdfDataKey == '1':
 			pdfDataValueDict = ast.literal_eval(pdfDataValue)
 			dictKey, dictVal = list(pdfDataValueDict.items())[0]
 			pdf.texts(dictKey,20,48,60,17)
-			pdf.texts(dictVal,160,48,60,17)
-		elif pdfDataKey == '5':
+			pdf.texts(dictVal,70,48,60,17)
+		elif pdfDataKey == '29':
 			pdfDataValueDict = ast.literal_eval(pdfDataValue)
 			dictKey, dictVal = list(pdfDataValueDict.items())[0]
 			pdf.texts(dictKey,20,54,60,17)
-			pdf.texts(dictVal,160,54,60,17)
-		elif pdfDataKey == '6':
+			pdf.texts(dictVal,70,54,60,17)
+		elif pdfDataKey == '3':
 			pdfDataValueDict = ast.literal_eval(pdfDataValue)
 			dictKey, dictVal = list(pdfDataValueDict.items())[0]
 			pdf.texts(dictKey,20,60,60,17)
-			pdf.texts(dictVal,160,60,60,17)
-		elif pdfDataKey == '7':
+			pdf.texts(dictVal,70,60,60,17)
+		elif pdfDataKey == '4':
 			pdfDataValueDict = ast.literal_eval(pdfDataValue)
 			dictKey, dictVal = list(pdfDataValueDict.items())[0]
 			pdf.texts(dictKey,20,66,60,17)
-			pdf.texts(dictVal,160,66,60,17)
-		elif pdfDataKey == '8':
+			pdf.texts(dictVal,70,66,60,17)
+		elif pdfDataKey == '5':
 			pdfDataValueDict = ast.literal_eval(pdfDataValue)
 			dictKey, dictVal = list(pdfDataValueDict.items())[0]
 			pdf.texts(dictKey,20,72,60,17)
-			pdf.texts(dictVal,160,72,60,17)
-		elif pdfDataKey == '9':
+			pdf.texts(dictVal,70,72,60,17)
+		elif pdfDataKey == '6':
 			pdfDataValueDict = ast.literal_eval(pdfDataValue)
 			dictKey, dictVal = list(pdfDataValueDict.items())[0]
 			pdf.texts(dictKey,20,78,60,17)
-			pdf.texts(dictVal,160,78,60,17)
-		elif pdfDataKey == '10':
+			pdf.texts(dictVal,70,78,60,17)
+		elif pdfDataKey == '7':
 			pdfDataValueDict = ast.literal_eval(pdfDataValue)
 			dictKey, dictVal = list(pdfDataValueDict.items())[0]
 			pdf.texts(dictKey,20,84,60,17)
-			pdf.texts(dictVal,160,84,60,17)
+			pdf.texts(dictVal,70,84,60,17)
 		else:
-			if pdfDataKey == '11':
+			if pdfDataKey == '8':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,105,60,17)
 				pdf.texts(dictVal,160,105,60,17)
-			elif pdfDataKey == '12':
+			elif pdfDataKey == '9':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,111,60,17)
 				pdf.texts(dictVal,160,111,60,17)
-			elif pdfDataKey == '13':
+			elif pdfDataKey == '10':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,117,60,17)
 				pdf.texts(dictVal,160,117,60,17)
-			elif pdfDataKey == '14':
+			elif pdfDataKey == '11':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,123,60,17)
 				pdf.texts(dictVal,160,123,60,17)
-			elif pdfDataKey == '15':
+			elif pdfDataKey == '12':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,129,60,17)
 				pdf.texts(dictVal,160,129,60,17)
-			elif pdfDataKey == '16':
+			elif pdfDataKey == '13':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,135,60,17)
 				pdf.texts(dictVal,160,135,60,17)
-			elif pdfDataKey == '17':
+			elif pdfDataKey == '14':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,141,60,17)
 				pdf.texts(dictVal,160,141,60,17)
-			elif pdfDataKey == '18':
+			elif pdfDataKey == '15':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,147,60,17)
 				pdf.texts(dictVal,160,147,60,17)
-			elif pdfDataKey == '19':
+			elif pdfDataKey == '16':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,153,60,17)
 				pdf.texts(dictVal,160,153,60,17)
-			elif pdfDataKey == '20':
+			elif pdfDataKey == '17':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,159,60,17)
 				pdf.texts(dictVal,160,159,60,17)
-			elif pdfDataKey == '21':
+			elif pdfDataKey == '18':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,165,60,17)
 				pdf.texts(dictVal,160,165,60,17)
-			elif pdfDataKey == '22':
+			elif pdfDataKey == '19':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,171,60,17)
 				pdf.texts(dictVal,160,171,60,17)
-			elif pdfDataKey == '23':
+			elif pdfDataKey == '20':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,177,60,17)
 				pdf.texts(dictVal,160,177,60,17)
-			elif pdfDataKey == '24':
+			elif pdfDataKey == '21':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,183,60,17)
 				pdf.texts(dictVal,160,183,60,17)
-			elif pdfDataKey == '25':
+			elif pdfDataKey == '22':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,189,60,17)
 				pdf.texts(dictVal,160,189,60,17)
-			elif pdfDataKey == '26':
+			elif pdfDataKey == '23':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,195,60,17)
 				pdf.texts(dictVal,160,195,60,17)
-			elif pdfDataKey == '27':
+			elif pdfDataKey == '24':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,201,60,17)
 				pdf.texts(dictVal,160,201,60,17)
-			elif pdfDataKey == '28':
+			elif pdfDataKey == '25':
 				pdfDataValueDict = ast.literal_eval(pdfDataValue)
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,207,60,17)
 				pdf.texts(dictVal,160,207,60,17)
-			#elif pdfDataKey == '29':
-			#	pdfDataValueDict = ast.literal_eval(pdfDataValue)
-			#	dictKey, dictVal = list(pdfDataValueDict.items())[0]
-			#	pdf.texts(dictKey,20,213,60,17)
-			#	pdf.texts(dictVal,160,213,60,17)
+			elif pdfDataKey == '27':
+				pdfDataValueDict = ast.literal_eval(pdfDataValue)
+				dictKey, dictVal = list(pdfDataValueDict.items())[0]
+				pdf.texts(dictKey,20,213,60,17)
+				pdf.texts(dictVal,160,213,60,17)
 
 	pdf.set_fill_color(int(databaseData_pdf[-1][32]),int(databaseData_pdf[-1][33]),int(databaseData_pdf[-1][34]))
 	pdf.rect(0,287,210,297,style = 'F')
@@ -834,15 +834,14 @@ def autoclave_pdf():
 	response.headers.set('Content-Disposition', 'attachment', filename=pdfFileName + '.pdf')
 	response.headers.set('Content-Type', 'application/pdf')
 
-	if databaseData_pdf[-1][29] == 'true' or databaseData_pdf[-1][29] == 'TRUE' or databaseData_pdf[-1][29] == '1':
+	if databaseData_pdf[-1][29] == 'true':
 
 		graphXValList.clear()
 		graphYValList.clear()
 
 		try:
 			os.remove(graphSaved)
-		except OSError as e:
-			print(e)
+		except OSError:
 			pass
 
 	userConnected_pdf.conn.close()#close sqlite connection

@@ -218,8 +218,8 @@ def returnData():
 	for loop in range(len(columnNamesRaw)):
 		columnNames.append(columnNamesRaw[loop][1])
 	userConnected.conn.close()#close sqlite connection
-	print("--------------------requestedData------------------------>", requestedData)
-	print("--------------------columnNames------------------------>", requestedData)
+	#print("--------------------requestedData------------------------>", requestedData)
+	#print("--------------------columnNames------------------------>", requestedData)
 	return jsonify({
 		"info"   :  requestedData,
 		"columnNames"   :  columnNames,
@@ -331,7 +331,8 @@ def updateTableUrl():
 						})
 				else:
 					continue
-			isUpdated = userConnected.updateTableUniqueRecords(item[0], currentTableData) #perform data update
+			newValueListExport = customFunctions.changeDateFormat(currentTableData)
+			isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport) #perform data update
 			if isUpdated == True: tablesUpdated += 1
 		import os
 		cwd = os.getcwd()
@@ -386,37 +387,22 @@ def deleteUserData():
 	else:
 		userConnected = dbconn.user()
 		userConnected.connectToDB(targetDatabase)
-		if '_graphics' in table:
-			commandToExecute = 'DROP TABLE ' + table
+		
+		clonePartialNameList = tablesToFilterPartialName
+		coreTableName = None #if recieved table name is base name then this varianle will be with none value
+		for loop in range(len(tablesToFilterPartialName)):
+			if clonePartialNameList[loop] in table:
+				table = table.replace(clonePartialNameList[loop],'')
+				break
+
+		#perform table delete process
+		# all data about additional subtables are taken from list: tablesToFilterPartialName from config file
+		commandToExecute = 'DROP TABLE ' + table
+		userConnected.cur.execute(commandToExecute)
+		for item in clonePartialNameList:
+			commandToExecute = 'DROP TABLE ' + table + item
 			userConnected.cur.execute(commandToExecute)
-			otherTable = table.replace('_graphics','_headers')
-			commandToExecute = 'DROP TABLE ' + otherTable
-			userConnected.cur.execute(commandToExecute)
-			otherTable = table.replace('_graphics','')
-			commandToExecute = 'DROP TABLE ' + otherTable
-			userConnected.cur.execute(commandToExecute)
-		elif '_headers' in table:
-			commandToExecute = 'DROP TABLE ' + table
-			userConnected.cur.execute(commandToExecute)
-			otherTable = table.replace('_headers','_graphics')
-			commandToExecute = 'DROP TABLE ' + otherTable
-			userConnected.cur.execute(commandToExecute)
-			otherTable = table.replace('_headers','')
-			commandToExecute = 'DROP TABLE ' + otherTable
-			userConnected.cur.execute(commandToExecute)
-		else:
-			#delete dataTable
-			commandToExecute = 'DROP TABLE ' + table
-			userConnected.cur.execute(commandToExecute)
-			#delete graphics table
-			commandToExecute = 'DROP TABLE ' + table + '_graphics'
-			userConnected.cur.execute(commandToExecute)
-			#delete headers table
-			commandToExecute = 'DROP TABLE ' + table + '_headers'
-			userConnected.cur.execute(commandToExecute)
-			#delete texts table
-			commandToExecute = 'DROP TABLE ' + table + '_texts'
-			userConnected.cur.execute(commandToExecute)
+
 		currentActionInput = 'Table with name ->' + table + '<- is deleted, including _graphics & _headers table'
 		dbconn.addRecordToActionLogDB(current_user.username, currentActionInput, targetDatabase, table)
 	return jsonify({

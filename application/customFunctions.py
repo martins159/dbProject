@@ -52,7 +52,8 @@ def validateDate(date_text):
 	try:
 		#datetime.strptime(date_text, '%Y-%m-%d')
 		#28/6/2021
-		datetime.strptime(date_text, '%d/%m/%Y')
+		#datetime.strptime(date_text, '%d/%m/%Y')
+		datetime.strptime(date_text, '%m/%d/%Y')
 		return True
 	except ValueError:
 		return False
@@ -67,7 +68,8 @@ def changeDateFormat(itemList):
 		for index in dateItemsIndexes:
 			#print("------------------itemList[currlist][index]----------------->",itemList[currlist][index])
 			item = datetime.strptime(itemList[currlist][index], '%m/%d/%Y')
-			
+			#item = datetime.strptime(itemList[currlist][index], '%d/%m/%Y')
+
 			newList[currlist][index] = item.strftime('%Y-%m-%d')
 		
 	return newList
