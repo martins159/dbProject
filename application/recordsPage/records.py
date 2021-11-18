@@ -151,7 +151,7 @@ def recordsTab():
 	#databaseTables = customFunctions.filterIfContain(databaseTables,'_graphics')
 	
 	if len(databaseTables) > 0:
-		databaseData = userConnected.selectData(databaseTables[0],listColumnNames = ['rowid'], listSearchValues = [50], listOperators = ['<'], selectCustomFromAllColumns = True, printOnConsole = False)
+		databaseData = userConnected.selectData(databaseTables[0],listColumnNames = ['rowid'], listSearchValues = [50], listOperators = ['<'], selectCustomFromAllColumns = True, selectDescending = True, recordsLimit = 50, printOnConsole = False)
 		data = [loop[0] for loop in databaseData]
 		
 		info = customFunctions.unique(data)

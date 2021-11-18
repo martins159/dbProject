@@ -277,13 +277,16 @@ class user(object):
 
 
 
-	def selectData(self, nameOfTable, listColumnNames = [None], listSearchValues = [None], listOperators = [None], specificColumnsOnly = False, selectCustomFromAllColumns = False, selectAll = False, printOnConsole = True):
+	def selectData(self, nameOfTable, listColumnNames = [None], listSearchValues = [None], listOperators = [None], specificColumnsOnly = False, selectCustomFromAllColumns = False, selectDescending = False, recordsLimit = None, selectAll = False, printOnConsole = True):
 	#example for specific: userConnected.selectData('rsTrade', ['item', 'quantity'], ['testEntry', 1], ['=', '>'])
 	#or for all: userConnected.selectData('rsTrade', selectAll = True)
+	#For selectAll - by default it return all data, but if recordsLimit is present it will constrain it
 	#if selectAll == True: selectCustomFromAllColumns = False#just for override - if select all then ignore all other options
 		if self.conn == None:
 			print("you are not connected to database!")
 			return
+		#selectDescending
+			#code here
 		if selectAll == False and selectCustomFromAllColumns == False:
 			if specificColumnsOnly == True:
 				lenght = len(listColumnNames)
@@ -316,9 +319,15 @@ class user(object):
 						columnNamesTuple += (listColumnNames[loop],)
 
 				#print(columnNamesTuple)
-				stringsToJoin = ("SELECT", " ".join(columnNamesTuple), "FROM", nameOfTable, "WHERE", " ".join(columnNamesAndOperatorsTuple))
+				extraConstraints = ""
+				if selectDescending == True or recordsLimit != None:
+					extraConstraints = extraConstraints + "ORDER BY rowid "
+					if selectDescending == True:
+						extraConstraints = extraConstraints + "DESC "
+					if recordsLimit != None:
+						extraConstraints = extraConstraints + "LIMIT " + str(recordsLimit)
+				stringsToJoin = ("SELECT", " ".join(columnNamesTuple), "FROM", nameOfTable, "WHERE", " ".join(columnNamesAndOperatorsTuple), extraConstraints)
 				commandToExecute = " ".join(stringsToJoin)
-				#can print command to see how it looks
 				#print(commandToExecute)
 				self.cur.execute(commandToExecute, listSearchValues)
 		elif selectCustomFromAllColumns == True:
@@ -365,14 +374,31 @@ class user(object):
 					columnNamesAndOperatorsTuple += ('"' + listColumnNames[loop] + '"',listOperators[loop], '?',)
 
 			#print(columnNamesTuple)
-			stringsToJoin = ("SELECT * FROM", nameOfTable, "WHERE", " ".join(columnNamesAndOperatorsTuple))
+			#stringsToJoin = ("SELECT * FROM", nameOfTable, "WHERE", " ".join(columnNamesAndOperatorsTuple))
+			extraConstraints = ""
+			if selectDescending == True or recordsLimit != None:
+				extraConstraints = extraConstraints + "ORDER BY rowid "
+				if selectDescending == True:
+					extraConstraints = extraConstraints + "DESC "
+				if recordsLimit != None:
+					extraConstraints = extraConstraints + "LIMIT " + str(recordsLimit)
+			stringsToJoin = ("SELECT * FROM", nameOfTable, "WHERE", " ".join(columnNamesAndOperatorsTuple), extraConstraints)
+
+
 			commandToExecute = " ".join(stringsToJoin)
 			#can print command to see how it looks
 			#print(commandToExecute)
 			self.cur.execute(commandToExecute, listSearchValues)
 		else:
 			#select all
-			stringsToJoin = ("SELECT *", "FROM", nameOfTable)
+			extraConstraints = ""
+			if selectDescending == True or recordsLimit != None:
+				extraConstraints = extraConstraints + "ORDER BY rowid "
+				if selectDescending == True:
+					extraConstraints = extraConstraints + "DESC "
+				if recordsLimit != None:
+					extraConstraints = extraConstraints + "LIMIT " + str(recordsLimit)
+			stringsToJoin = ("SELECT *", "FROM", nameOfTable, extraConstraints)
 			commandToExecute =  " ".join(stringsToJoin)
 			self.cur.execute(commandToExecute)
 		rows = self.cur.fetchall()
