@@ -277,7 +277,7 @@ class user(object):
 
 
 
-	def selectData(self, nameOfTable, listColumnNames = [None], listSearchValues = [None], listOperators = [None], specificColumnsOnly = False, selectCustomFromAllColumns = False, selectDescending = False, recordsLimit = None, selectAll = False, printOnConsole = True):
+	def selectData(self, nameOfTable, listColumnNames = [None], listSearchValues = [None], listOperators = [None], specificColumnsOnly = False, selectCustomFromAllColumns = False, selectDescending = False, recordsLimit = None, selectAll = False, printOnConsole = False, printCommand = False):
 	#example for specific: userConnected.selectData('rsTrade', ['item', 'quantity'], ['testEntry', 1], ['=', '>'])
 	#or for all: userConnected.selectData('rsTrade', selectAll = True)
 	#For selectAll - by default it return all data, but if recordsLimit is present it will constrain it
@@ -302,6 +302,7 @@ class user(object):
 				commandToExecute = " ".join(stringsToJoin)
 				#can print command to see how it looks
 				#print(commandToExecute)
+				if printCommand == True: print(commandToExecute)
 				self.cur.execute(commandToExecute)
 			else:
 				if len(listColumnNames) != len(listSearchValues) or len(listColumnNames) != len(listOperators):
@@ -329,6 +330,9 @@ class user(object):
 				stringsToJoin = ("SELECT", " ".join(columnNamesTuple), "FROM", nameOfTable, "WHERE", " ".join(columnNamesAndOperatorsTuple), extraConstraints)
 				commandToExecute = " ".join(stringsToJoin)
 				#print(commandToExecute)
+				if printCommand == True:
+					print('comantToExecute -----> ',commandToExecute)
+					print('listSearchValues ----> ',listSearchValues)
 				self.cur.execute(commandToExecute, listSearchValues)
 		elif selectCustomFromAllColumns == True:
 			if isinstance(listColumnNames[0], list):
@@ -388,6 +392,9 @@ class user(object):
 			commandToExecute = " ".join(stringsToJoin)
 			#can print command to see how it looks
 			#print(commandToExecute)
+			if printCommand == True:
+				print('comantToExecute -----> ',commandToExecute)
+				print('listSearchValues -----> ',listSearchValues)
 			self.cur.execute(commandToExecute, listSearchValues)
 		else:
 			#select all
@@ -400,6 +407,7 @@ class user(object):
 					extraConstraints = extraConstraints + "LIMIT " + str(recordsLimit)
 			stringsToJoin = ("SELECT *", "FROM", nameOfTable, extraConstraints)
 			commandToExecute =  " ".join(stringsToJoin)
+			if printCommand == True: print(commandToExecute)
 			self.cur.execute(commandToExecute)
 		rows = self.cur.fetchall()
 		rowsForReturn = rows
@@ -501,13 +509,18 @@ class user(object):
 		#print(cur.fetchall())
 		self.conn.commit()
 
-	def updateTableUniqueRecords(self, nameOfTable, dataList, reportUpdateCount = False, specificKeyList = None):
+	def updateTableUniqueRecords(self, nameOfTable, dataList, reportUpdateCount = False, specificKeyList = None, reverse = False):
 		#  - if 'reportUpdateCount' option is true then return how much rows are written
 		#  - 'specificKeyList' is ment for cases when column order is not same as in database
 		#this function check how many records from begining of list are unique - are not present in current table, then this number is used to shrink orginal recieved data list
 		#after that records are uploaded to table
 		#Counting is performed until first line with same data is detected
-	
+		#By default this function think that newest data is first in list - or at top of table
+		#	if that is not case then set variable reverse = True
+		
+		dataListClone = dataList
+		if reverse == True:
+			dataListClone.reverse()
 		tableInfo = self.getTableInfo(nameOfTable)#get table info
 		#print("-------------------------------------tableInfo---->",tableInfo)
 		keyList = [None] * len(tableInfo)
@@ -515,15 +528,21 @@ class user(object):
 			keyList[loop] = tableInfo[loop][1]
 		#print("-----------------------------------------keyList--->",keyList)
 		dataToUpload = 0
-		for rowData in dataList:#in this loop check for first row whitch is not found in database
+		for rowData in dataListClone: #in this loop check for first row whitch is not found in database
 			if specificKeyList != None:
-				dbData = self.selectData(nameOfTable, listColumnNames = [specificKeyList], listSearchValues = [rowData], listOperators = ['='] * len(specificKeyList), printOnConsole = False, selectCustomFromAllColumns = True)
+				dbData = self.selectData(nameOfTable, listColumnNames = [specificKeyList], listSearchValues = [rowData], listOperators = ['='] * len(specificKeyList), printOnConsole = False,printCommand = False, selectCustomFromAllColumns = True)
 			else:
-				dbData = self.selectData(nameOfTable, listColumnNames = [keyList], listSearchValues = [rowData], listOperators = ['='] * len(keyList), printOnConsole = False, selectCustomFromAllColumns = True)
+				dbData = self.selectData(nameOfTable, listColumnNames = [keyList], listSearchValues = [rowData], listOperators = ['='] * len(keyList), printOnConsole = False, printCommand = False, selectCustomFromAllColumns = True)
 			if not dbData:
 				dataToUpload += 1
 			else: break
-		dataToInsert = dataList[:dataToUpload]
+		dataToInsert = None
+		if reverse == True:
+			rawList = dataListClone[:dataToUpload]
+			rawList.reverse()
+			dataToInsert = rawList
+		else:
+			dataToInsert = dataListClone[:dataToUpload]
 
 		#counter = 1
 		if len(dataToInsert) < 1:
@@ -540,6 +559,7 @@ class user(object):
 				#print(counter)
 				#counter += 1
 				#print('--------------INSERTING---------------')
+				print(dataToUpload)
 			if reportUpdateCount == True:
 				return True, dataToUpload
 			else:

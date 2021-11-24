@@ -151,7 +151,7 @@ def recordsTab():
 	#databaseTables = customFunctions.filterIfContain(databaseTables,'_graphics')
 	
 	if len(databaseTables) > 0:
-		databaseData = userConnected.selectData(databaseTables[0],listColumnNames = ['rowid'], listSearchValues = [50], listOperators = ['<'], selectCustomFromAllColumns = True, selectDescending = True, recordsLimit = 50, printOnConsole = False)
+		databaseData = userConnected.selectData(databaseTables[0],selectAll = True, selectDescending = True, recordsLimit = 50, printOnConsole = False)
 		data = [loop[0] for loop in databaseData]
 		
 		info = customFunctions.unique(data)
@@ -337,7 +337,11 @@ def userupdateTableUrl():
 			#change date formats
 			newValueListExport = customFunctions.changeDateFormat(currentTableData)
 			#print(newValueListExport)
-			isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport) #perform data update
+			isUpdated = False
+			if any(name == item[0] for name in tablesToFilterPartialName):
+				isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport)
+			else:
+				isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, reverse = True) #perform data update
 			if isUpdated == True: tablesUpdated += 1
 		reportString = str(tablesUpdated) + " tables updated. "
 		return jsonify({
