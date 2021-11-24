@@ -16,6 +16,12 @@ from datetime import datetime
 from datetime import timedelta
 from application import customFunctions
 
+#---------------- config data-------------------------------------
+import sys
+sys.path.append("..")
+from config import tablesToFilterWholeName
+from config import tablesToFilterPartialName
+
 class user(object):
 	def __init__(self):
 		#self.username = usernameInput
@@ -252,7 +258,7 @@ class user(object):
 			return
 		stringsToJoin = ("UPDATE ", nameOfTable, " SET ", column1, " = '", column1_RecordToChange, "' WHERE ", column2_refference, " = '", column2_RecordAsReference, "'")
 		commandToExecute = "".join(stringsToJoin)
-		print(commandToExecute)
+		#print(commandToExecute)
 		self.cur.execute(commandToExecute)
 		self.conn.commit()
 
@@ -559,7 +565,7 @@ class user(object):
 				#print(counter)
 				#counter += 1
 				#print('--------------INSERTING---------------')
-				print(dataToUpload)
+				#print(dataToUpload)
 			if reportUpdateCount == True:
 				return True, dataToUpload
 			else:
@@ -765,9 +771,14 @@ def checkAllUserDatabases():
 					#print('------Download has failed-----',usrDBname, table )
 					addRecordToActionLogDB('--Auto update--', '--Download has failed--', usrDBname, table)
 					continue
-				#change date format from /%m/%Y to %Y-%m-%d 
+				#change date format from /%m/%Y to %Y-%m-%d
 				newValueListExport = customFunctions.changeDateFormat(currentTableData)
-				isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True)#perform data update
+				isUpdated = None
+				updateCount = None
+				if any(name == table for name in tablesToFilterPartialName):
+					isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True)#perform data update
+				else:
+					isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True, reverse = True)
 				if isUpdated == True:
 					userConnected.countAllRecords(table, operator = '-', value = updateCount)
 					report = 'Add ' + str(updateCount) + ' records. ' + 'Starting from rowid > ' + str(userConnected.countAllRecords(table, operator = '-', value = updateCount))

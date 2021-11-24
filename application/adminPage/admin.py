@@ -332,7 +332,11 @@ def updateTableUrl():
 				else:
 					continue
 			newValueListExport = customFunctions.changeDateFormat(currentTableData)
-			isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport) #perform data update
+			isUpdated = None
+			if any(name == item[0] for name in tablesToFilterPartialName):
+				isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport) #perform data update
+			else:
+				isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, reverse = True)
 			if isUpdated == True: tablesUpdated += 1
 		import os
 		cwd = os.getcwd()
