@@ -18,9 +18,9 @@
   <button type="button" id="rowData">Izvēlēties iezīmēto cikla ierakstu</button>
   <input type="submit" class="submitBTN" style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;" value="Izvēlēties datubāzes datus" 
   onclick="window.location='/searchNew';" />
-  <input type="submit" class="submitBTN" style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;" value="Iestatījumi" 
+  <input type="submit" class="submitBTN" style = "display:none; font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;" value="Iestatījumi" 
   onclick="window.location='/settings';" />
-  <button id="updtTables" type="button">Atjaunot tabulu ierakstus</button>
+  <button id="updtTables" type="button">Atjaunot tabulu ierakstus <i style="visibility:hidden;"  id="loading_data" class="fa fa-refresh fa-spin"></i></button>
 
   <legend style="margin-top:5px; margin-bottom:5px;">Tabulas datu filtrēšana</legend>
   <select id="filter-field" required style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;">
@@ -71,6 +71,16 @@
 </style>
 <script>
 
+function reloadPage(){
+	window.location.reload(false);
+}
+//----------------------------------------loading icon--------------------------------------------
+
+document.getElementById("updtTables").addEventListener("click", function(){
+	document.getElementById("loading_data").style.visibility = "visible";
+});
+
+//---------------------------------------loading icon end-----------------------------------------
 var usrLev = {{ userLevel|tojson }};
 
 if(usrLev == "notAdmin"){
@@ -328,8 +338,8 @@ function downloadTable(){
 		  //data: JSON.stringify(table2.getData()),
 		  success: function (data) {
 		   alert(data['info']);
-		   console.log(data['info'])
-		   //reloadPage();
+		   console.log(data['info']);
+		   reloadPage();
 		  },
 		  dataType: "json"//datatype ajax are expecting from response, if 'text' then it will be as string not as dictionary
 		});

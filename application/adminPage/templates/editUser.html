@@ -85,7 +85,7 @@
 	<input type="text" id="urlForTable" placeholder="Tabulas url" style = "font-family:sans-serif; font-weight:bold; color: white; background-color: dodgerblue; border-radius: 25px; border: 0px; padding: 5px 5px 5px 5px;">
 	<button id="addUrl">Pievienot url</button>
 	<button id="delUrl">Nodzēst atzīmēto</button>
-	<button id="updtTables">Atjaunot tabulas</button>
+	<button id="updtTables">Atjaunot tabulas <i style="visibility:hidden;" id="loading_data" class="fa fa-refresh fa-spin"></i></button>
 	<br>
 	<p>Currently url assigned for {{tableDataUrl[0]}} tables of {{tableDataUrl[1]}}</p> 
 	<div id='userUrlPreview' style="margin-top:10px; width:90%; display:block; margin-left: auto; margin-right: auto; max-width: 1200px;"></div>
@@ -209,8 +209,8 @@ var table3 = new Tabulator("#userUrlPreview", {
       //data: JSON.stringify(table2.getData()),
       success: function (data) {
 	   alert(data['info']);
-	   console.log(data['info'])
-	   //reloadPage();
+	   console.log(data['info']);
+	   reloadPage();
       },
       dataType: "json"//datatype ajax are expecting from response, if 'text' then it will be as string not as dictionary
     });
@@ -665,6 +665,13 @@ document.getElementById("uploadData").addEventListener('click', uploadDataToServ
 document.getElementById("requestData").addEventListener('click', requestDataFromServer);
 document.getElementById("requestFromUrl").addEventListener('click', requestDataFromUrl);//request data from another website
 
+//---------------------------------------------------loading icon-----------------------------------
+
+document.getElementById("updtTables").addEventListener("click", function(){
+	document.getElementById("loading_data").style.visibility = "visible";
+});
+
+//--------------------------------------------------loading icon end--------------------------------
 
 
 </script>

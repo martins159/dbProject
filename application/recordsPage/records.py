@@ -100,7 +100,7 @@ def recordsTab():
 		current_user.lastLogin = datetime.datetime.now()#register login time
 		db.session.commit()
 	
-	customPresent = request.args.get('customRecords')# None type if not existing
+	customPresent = request.args.get('customRecords') # None type if not existing
 	if customPresent != None:
 		try:
 			userData = userDataSelectedData[customPresent]
@@ -125,7 +125,11 @@ def recordsTab():
 				columnNamesWithoutSpaces.append(word.replace(" ",""))
 			colNamesExport = []
 			for (titleName,fieldName) in zip(columnNames,columnNamesWithoutSpaces):
-				colNamesExport.append({'title':titleName, 'field':fieldName, 'minWidth':100})
+				if fieldName == 'Date':
+					#this is only for Date column, statement could be deleted in future.  Or modified.
+					colNamesExport.append({'title':titleName, 'field':fieldName, 'minWidth':300})
+				else:
+					colNamesExport.append({'title':titleName, 'field':fieldName, 'minWidth':100})
 			table =  request.args.get('table')
 			session['currentTable'] = table
 			return render_template(
@@ -177,7 +181,10 @@ def recordsTab():
 		#	colNamesExport.append({'title':titleName, 'field':fieldName})
 			
 		for loop in range(len(columnNames)):
-			colNamesExport.append({'title':columnNames[loop], 'field':columnNames[loop]})
+			if columnNames[loop] == 'Date' or columnNames[loop] == 'UTC Time': #just manualy added format
+				colNamesExport.append({'title':columnNames[loop], 'field':columnNames[loop], 'minWidth':100})
+			else:
+				colNamesExport.append({'title':columnNames[loop], 'field':columnNames[loop]})
 		
 		
 		userConnected.conn.close()
@@ -198,16 +205,22 @@ def recordsTab():
 		session['currentTable'] = databaseTables[0]
 		#print("databaseData -------------------------------->", columnNames)
 		#print("databaseData -------------------------------->", variable)
-		return render_template(
-		'recordsTab.html',
-		userLevel = userLevel, tableData = variable, columnNames = columnNames, colNamesExport = colNamesExport, currTable = databaseTables[0], username = current_user.username
-		)
+		if current_user.isActive == 1:
+			return render_template(
+			'recordsTab.html',
+			userLevel = userLevel, tableData = variable, columnNames = columnNames, colNamesExport = colNamesExport, currTable = databaseTables[0], username = current_user.username
+			)
+		else:
+			return redirect(url_for('auth_bp.logout'))
 	else: 
 		userConnected.conn.close()#close sqlite connection
-		return render_template(
-		'recordsTab.html',
-		userLevel = userLevel, tableData = [], columnNames = [], colNamesExport = [], currTable = "No table is created yet", username = current_user.username
-		)
+		if current_user.isActive == 1:
+			return render_template(
+			'recordsTab.html',
+			userLevel = userLevel, tableData = [], columnNames = [], colNamesExport = [], currTable = "No table is created yet", username = current_user.username
+			)
+		else:
+			return redirect(url_for('auth_bp.logout'))
 	
 	
 	
@@ -234,7 +247,11 @@ def search():
 		tableData.append(infoDict)
 	#tableDataExport = jsonify(tableData)
 	userConnected.conn.close()#close sqlite connection
-	return render_template('searchNew.html', tables = databaseTables, tableData = tableData, username = current_user.username)
+	if current_user.isActive == 1:
+		return render_template('searchNew.html', tables = databaseTables, tableData = tableData, username = current_user.username)
+	else:
+		return redirect(url_for('auth_bp.logout'))
+
 
 @records_bp.route('/searchNewRequestData', methods = ['POST', 'GET'])
 @login_required
@@ -587,8 +604,10 @@ def pdfConfig():
 					})
 
 				
-				
-	return render_template('pdfConfig.html', pdfParams = paramsListExport, username = current_user.username)
+	if current_user.isActive == 1:			
+		return render_template('pdfConfig.html', pdfParams = paramsListExport, username = current_user.username)
+	else:
+		return redirect(url_for('auth_bp.logout'))
 	
 
 	
@@ -816,11 +835,11 @@ def autoclave_pdf():
 		ax.set_xlabel(convertedDates) # Tickmark + label at every plotted point
 		ax.xaxis.set_major_formatter(dates.DateFormatter('%H:%M'))
 
-		plt.plot_date(convertedDates, graphYValList, fmt=':k', tz=None, xdate=True, ydate=False)
+		plt.plot_date(convertedDates[:-1], graphYValList[:-1], fmt=':k', tz=None, xdate=True, ydate=False)
 		plt.xticks(rotation = 45)
 		plt.ylabel('{}'.format(databaseData_pdf[-1][31]))
 		plt.xlabel('Laiks')
-		plt.yticks(np.arange(-1.5, 14, 0.5))
+		plt.yticks(np.arange(int(databaseData_pdf[-1][38]),int(databaseData_pdf[-1][39]),int(databaseData_pdf[-1][40])))
 		
 		#---------------------------------------------------------
 		graphSaved = '{}_plot.png'.format(userToEditTitle)
