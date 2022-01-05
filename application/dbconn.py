@@ -515,7 +515,7 @@ class user(object):
 		#print(cur.fetchall())
 		self.conn.commit()
 
-	def updateTableUniqueRecords(self, nameOfTable, dataList, reportUpdateCount = False, specificKeyList = None, reverse = False):
+	def updateTableUniqueRecords(self, nameOfTable, dataList, reportUpdateCount = False, specificKeyList = None, reverse = False, specificCase1 = None):
 		#  - if 'reportUpdateCount' option is true then return how much rows are written
 		#  - 'specificKeyList' is ment for cases when column order is not same as in database
 		#this function check how many records from begining of list are unique - are not present in current table, then this number is used to shrink orginal recieved data list
@@ -523,11 +523,30 @@ class user(object):
 		#Counting is performed until first line with same data is detected
 		#By default this function think that newest data is first in list - or at top of table
 		#	if that is not case then set variable reverse = True
+		#------------------------------------------------ specificCase1 -------------------------------------------------------
+		# this case is ment when data is haotic, as example below. This function orders them in right order, so the newest is on top of column and oldest at the end of it.
+		#	       DATE  TIME
+		#	Newest	/ \    |    Oldest
+		#		 |    \ /
+		#		 |     |
+		#		 |    \ /   Newest
+		#	Oldest	 |
+		#
+		# 
+		# To use this function specify by which column order
+		# Take in account that actual first column index is zerro - 0 !!!		Example:   specificCase1 = 0
+		#
 		
+		#print('-------------------------------->this is : ', nameOfTable)
+
 		dataListClone = dataList
+		if specificCase1 != None:
+			dataListClone = sorted(dataListClone, key=lambda x:int(x[specificCase1]))
+			dataListClone.reverse()
+			print('------updt unique specificCase1------')
 		if reverse == True:
 			dataListClone.reverse()
-		tableInfo = self.getTableInfo(nameOfTable)#get table info
+		tableInfo = self.getTableInfo(nameOfTable) #get table info
 		#print("-------------------------------------tableInfo---->",tableInfo)
 		keyList = [None] * len(tableInfo)
 		for loop in range(len(tableInfo)):
@@ -539,18 +558,27 @@ class user(object):
 				dbData = self.selectData(nameOfTable, listColumnNames = [specificKeyList], listSearchValues = [rowData], listOperators = ['='] * len(specificKeyList), printOnConsole = False,printCommand = False, selectCustomFromAllColumns = True)
 			else:
 				dbData = self.selectData(nameOfTable, listColumnNames = [keyList], listSearchValues = [rowData], listOperators = ['='] * len(keyList), printOnConsole = False, printCommand = False, selectCustomFromAllColumns = True)
+
 			if not dbData:
 				dataToUpload += 1
 			else: break
-		dataToInsert = None
-		if reverse == True:
-			rawList = dataListClone[:dataToUpload]
-			rawList.reverse()
-			dataToInsert = rawList
-		else:
-			dataToInsert = dataListClone[:dataToUpload]
+		#aditionalData = []
+		#if specificCase1 != None:
+			#check if db has any data with this date
+			#dbData = self.selectData(nameOfTable, listColumnNames = [specificCase1[1]], listSearchValues = [dataList[0][specificCase1[0]]], listOperators = ['='], printOnConsole = False, printCommand = False, selectCustomFromAllColumns = True)
+			#print('--------------dbdataList------------>',dbData)
+			#if bool(dbData) == True: #check if any data returned
+				#
+				#for item in dbData:
+				#	print('----------im in specificCase1 for statement-------------')
+				#brizg
+				#		<----------------------------paliku seit------------------------------------------<<<<<
+				# janoceko katram ierakstam
+		#if reverse == True: dataListClone.reverse()
+		#or specificCase1 != None: dataListClone.reverse()
+		dataToInsert = dataListClone[:dataToUpload]
+		if reverse == True or specificCase1 != None: dataToInsert.reverse()
 
-		#counter = 1
 		if len(dataToInsert) < 1:
 			if reportUpdateCount == True:
 				return False, dataToUpload
@@ -645,7 +673,7 @@ def downloadCSV(url):
 	#print('-------------------------------->',os.getcwd())
 	pathToCSV = workingDirectory + "/" + outputName
 	rawData = []
-	with open(pathToCSV) as f:# cvs reader object must be created inside with statement to succesfully delete the file after it
+	with open(pathToCSV) as f: # cvs reader object must be created inside with statement to succesfully delete the file after it
 		csvReader = csv.reader(f, delimiter=',', quotechar='"')
 		for loop in csvReader:
 			rawData.append(loop)
@@ -767,6 +795,10 @@ def checkAllUserDatabases():
 				url = tableUrlRaw[1]
 				print(print(table, url))
 				currentTableData, currentTableNames = downloadCSV(url)
+				#print(currentTableData)
+				#print(len(currentTableData))
+				#if table == 'tests_graphics': print('---------------------record 9500: ', currentTableData[9500])
+				#print('---------------------------->table data ', table)
 				if currentTableData == None:
 					#print('------Download has failed-----',usrDBname, table )
 					addRecordToActionLogDB('--Auto update--', '--Download has failed--', usrDBname, table)
@@ -775,10 +807,12 @@ def checkAllUserDatabases():
 				newValueListExport = customFunctions.changeDateFormat(currentTableData)
 				isUpdated = None
 				updateCount = None
-				if any(name == table for name in tablesToFilterPartialName):
-					isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True)#perform data update
-				else:
-					isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True, reverse = True)
+				print('------------table name is: ', table)
+				#if any(name in table for name in tablesToFilterPartialName):
+				#	isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True, specificCase1 = 0)#perform data update
+				#else:
+				#	isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True, reverse = True)
+				isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True, specificCase1 = 0)
 				if isUpdated == True:
 					userConnected.countAllRecords(table, operator = '-', value = updateCount)
 					report = 'Add ' + str(updateCount) + ' records. ' + 'Starting from rowid > ' + str(userConnected.countAllRecords(table, operator = '-', value = updateCount))
@@ -823,7 +857,7 @@ def updateUserTables(usrDBname):
 				continue
 			#change date format from /%m/%Y to %Y-%m-%d 
 			newValueListExport = customFunctions.changeDateFormat(currentTableData)
-			isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True)#perform data update
+			isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True, specificCase1 = 0)
 			if isUpdated == True:
 				userConnected.countAllRecords(table, operator = '-', value = updateCount)
 				report = 'Add ' + str(updateCount) + ' records. ' + 'Starting from rowid > ' + str(userConnected.countAllRecords(table, operator = '-', value = updateCount))

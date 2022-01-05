@@ -179,7 +179,7 @@ def createTable():
 	#userConnected.cur.execute(commandToExecute)
 	#------------------------------------------------Create pdf text table ---------------------------------------------------------------------
 	TextTableName = tableName + '_texts'
-	IdNrList = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41] #0 iet virsrakstā un faila nosaukumā cikla nr. #30 vai grafiku vajag true/false #31 grafika lielums #32 grafika lieluma mervieniba
+	IdNrList = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43] #0 iet virsrakstā un faila nosaukumā cikla nr. #30 vai grafiku vajag true/false #31 grafika lielums #32 grafika lieluma mervieniba
 	IdNrListStr = [str(item) for item in IdNrList]
 	newDataTypes2 = ["TEXT" for item in IdNrListStr]
 	userConnected.createTable(TextTableName, IdNrListStr, newDataTypes2, listType = True)
@@ -333,10 +333,11 @@ def updateTableUrl():
 					continue
 			newValueListExport = customFunctions.changeDateFormat(currentTableData)
 			isUpdated = None
-			if any(name == item[0] for name in tablesToFilterPartialName):
-				isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport) #perform data update
-			else:
-				isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, reverse = True)
+			#if any(name in item[0] for name in tablesToFilterPartialName):
+			#	isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, specificCase1 = 0) #perform data update
+			#else:
+			#	isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport)
+			isUpdated = userConnected.updateTableUniqueRecords(table, newValueListExport, specificCase1 = 0)
 			if isUpdated == True: tablesUpdated += 1
 		import os
 		cwd = os.getcwd()

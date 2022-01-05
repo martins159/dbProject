@@ -355,10 +355,11 @@ def userupdateTableUrl():
 			newValueListExport = customFunctions.changeDateFormat(currentTableData)
 			#print(newValueListExport)
 			isUpdated = False
-			if any(name == item[0] for name in tablesToFilterPartialName):
-				isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport)
-			else:
-				isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, reverse = True) #perform data update
+			#if any(name in item[0] for name in tablesToFilterPartialName):
+			#	isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, specificCase1 = 0)
+			#else:
+			#	isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport) #perform data update
+			isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, specificCase1 = 0)
 			if isUpdated == True: tablesUpdated += 1
 		reportString = str(tablesUpdated) + " tables updated. "
 		return jsonify({
@@ -561,7 +562,9 @@ def pdfConfig():
 				date_time_obj1DT = date_time_objDate.strftime('%Y-%m-%d') 
 				#print(date_time_obj1.date())
 				#print(date_time_obj1.time())
-				if cycleDate in date_time_obj1DT:
+				print(varVal)
+				print(cycleDate)
+				if str(cycleDate) in str(date_time_obj1DT):
 					if date_time_obj1.time() >= date_time_obj2.time():  #obj1 jābūt mazākam par obj2
 						graphXValList.append(date_time_obj1.time())
 						graphYValList.append(varVal[3])
@@ -599,6 +602,7 @@ def pdfConfig():
 				session['dict'] = pdfEditedId
 				#return redirect(url_for('records_bp.autoclave_pdf'))
 				print(graphYValList)
+				print(graphXValList)				
 				return jsonify({
 						"info"   :  "success"
 					})
@@ -648,6 +652,8 @@ def autoclave_pdf():
 	pdf.set_fill_color(int(databaseData_pdf[-1][32]),int(databaseData_pdf[-1][33]),int(databaseData_pdf[-1][34]))
 	pdf.rect(0,0,210,24.5,style = 'F')
 	cycleValKey, CycleValVal = list(ast.literal_eval(acParamsDict['1']).items())[0]
+	pdf.texts('{}'.format(databaseData_pdf[-1][41]),0,0,100,17)
+	pdf.texts('{}'.format(databaseData_pdf[-1][42]),50,0,100,17)
 	pdf.titles('Cikla atskaites ID - {}'.format(session["TitlePDF"]))
 	pdf.texts('ID:'+str(session['TitlePDF']),190,0,60,17)
 	pdf.set_text_color(0,0,0)
