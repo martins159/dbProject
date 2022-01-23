@@ -88,11 +88,6 @@ def manageUsers():
 				return render_template(
 					'editUser.html'
 				)
-	#textColIndex = [1]
-	#usrLang = current_user.language
-	#userConnected.connectToDB('lang')
-	#texts = userConnected.selectData('texts', listColumnNames = textColIndex, listSearchValues = [usrLang], listOperators =['='], specificColumnsOnly = True)
-	#print('-------------------------->recieved texts from data base: ', texts)
 	return render_template(
 		'manageUsers.html', tableData = dataExport, colNamesExport = colNamesExport, username = current_user.username
     )
@@ -273,7 +268,7 @@ def addRecords():
 	newValueListExport = customFunctions.changeDateFormat(valueListExport)
 	
 	isUpdated, recordUploadCount = userConnected.updateTableUniqueRecords(table, newValueListExport, reportUpdateCount = True, specificKeyList = keyList)#perform data update
-
+	isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True, specificCase1 = 0)
 	if isUpdated == False:
 		userConnected.conn.close()#close sqlite connection
 		return jsonify({
@@ -338,11 +333,10 @@ def updateTableUrl():
 					continue
 			newValueListExport = customFunctions.changeDateFormat(currentTableData)
 			isUpdated = None
-			#if any(name in item[0] for name in tablesToFilterPartialName):
-			#	isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, specificCase1 = 0) #perform data update
-			#else:
-			#	isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport)
-			isUpdated = userConnected.updateTableUniqueRecords(table, newValueListExport, specificCase1 = 0)
+			if any(name in item[0] for name in tablesToFilterPartialName):
+				isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, specificCase1 = 0) #perform data update
+			else:
+				isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport)
 			if isUpdated == True: tablesUpdated += 1
 		import os
 		cwd = os.getcwd()

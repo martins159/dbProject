@@ -2,7 +2,7 @@
 
 {% block navig %}
 	<a class = "active" href="" style="float: right;"> Sveiki {{username}}!</a>
-	<a class = "active" href="{{ url_for('auth_bp.logout') }}" style="float: right;"><i class="fa fa-times"></i> Iziet</a>
+	<a class = "active" href="{{ url_for('auth_bp.logout') }}" style="float: right;"><i class="fa fa-times"></i> {{texts['1']}}</a>
 	<a id="adminBtn" class="active" href="manageUsers"><i class="fa fa-undo"></i> Atpakaļ</a>
 {% endblock %}
 

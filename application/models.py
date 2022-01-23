@@ -55,6 +55,10 @@ class User(UserMixin, db.Model):
         db.String(60),
         unique=False
     )
+    language = db.Column(
+        db.String(60),
+        unique=False
+    )
 
     def set_password(self, password):
         """Create hashed password."""

@@ -217,7 +217,7 @@ document.getElementById("requestDataLast").addEventListener("click", function(){
 	  $.ajax({
       type: "POST",
       contentType: "application/json; charset=utf-8",
-      url: "/searchNewRequestData?table=" + filterTable.value + "&username=" + "{{username}}",
+      url: "/searchNewRequestData?table=" + filterTable.value + "&username=" + "{{username}}" + "&specialCase=1",
       data: JSON.stringify([{columnName:'rowid',operator:'<',filterValue:'50'}]),
 		success: function (result) {
         if(result['info'] === "no_errors") location.href = "/recordsTab?customRecords=" + "{{username}}" + "&table=" + filterTable.value

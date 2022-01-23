@@ -67,7 +67,7 @@ class user(object):
 		columnNamesCorrected = []
 		for loop in range(len(columnNames)):
 			columnNameToApend = columnNames[loop]
-			if columnNameToApend[(len(columnNameToApend)-2):] == '\r': columnNameToApend = columnNameToApend[:(len(columnNameToApend))]#šo vēl jāizskata vai ir nepieciešams
+			if columnNameToApend[(len(columnNameToApend)-2):] == '\r': columnNameToApend = columnNameToApend[:(len(columnNameToApend))] #had to look in this if is realy necesary
 			if "'" in columnNameToApend:
 				coreName = columnNameToApend.replace("'","")
 				newName = "'" + coreName + "'"
@@ -283,7 +283,8 @@ class user(object):
 
 
 
-	def selectData(self, nameOfTable, listColumnNames = [None], listSearchValues = [None], listOperators = [None], specificColumnsOnly = False, selectCustomFromAllColumns = False, selectDescending = False, recordsLimit = None, selectAll = False, printOnConsole = False, printCommand = False):
+	def selectData(self, nameOfTable, listColumnNames = [None], listSearchValues = [None], listOperators = [None], listColsToRecieve = [None], specificColumnsOnly = False, selectCustomFromAllColumns = False, selectDescending = False, recordsLimit = None, selectAll = False, printOnConsole = False, printCommand = False):
+	#specific cells for row provide: listColumnNames, listSearchValues, listOperators, listColsToRecieve // rest of it as default
 	#example for specific: userConnected.selectData('rsTrade', ['item', 'quantity'], ['testEntry', 1], ['=', '>'])
 	#or for all: userConnected.selectData('rsTrade', selectAll = True)
 	#For selectAll - by default it return all data, but if recordsLimit is present it will constrain it
@@ -333,13 +334,28 @@ class user(object):
 						extraConstraints = extraConstraints + "DESC "
 					if recordsLimit != None:
 						extraConstraints = extraConstraints + "LIMIT " + str(recordsLimit)
-				stringsToJoin = ("SELECT", " ".join(columnNamesTuple), "FROM", nameOfTable, "WHERE", " ".join(columnNamesAndOperatorsTuple), extraConstraints)
-				commandToExecute = " ".join(stringsToJoin)
-				#print(commandToExecute)
-				if printCommand == True:
-					print('comantToExecute -----> ',commandToExecute)
-					print('listSearchValues ----> ',listSearchValues)
-				self.cur.execute(commandToExecute, listSearchValues)
+				#fix to this function
+				if listColsToRecieve != [None]:
+					rowNamesTuple = ()
+					for loop in range(len(listColsToRecieve)):
+						if loop != (len(listColsToRecieve)-1):
+							rowNamesTuple += ('"',listColsToRecieve[loop], '"', ',',)
+						else: 
+							rowNamesTuple += ('"',listColsToRecieve[loop],'"')
+					stringsToJoin = ("SELECT", "".join(rowNamesTuple), "FROM", nameOfTable, "WHERE", " ".join(columnNamesAndOperatorsTuple), extraConstraints)
+					commandToExecute = " ".join(stringsToJoin)
+					if printCommand == True:
+						print('comantToExecute -----> ',commandToExecute)
+						print('listSearchValues ----> ',listSearchValues)
+					self.cur.execute(commandToExecute, listSearchValues)
+				else:
+					stringsToJoin = ("SELECT", " ".join(columnNamesTuple), "FROM", nameOfTable, "WHERE", " ".join(columnNamesAndOperatorsTuple), extraConstraints)
+					commandToExecute = " ".join(stringsToJoin)
+					#print(commandToExecute)
+					if printCommand == True:
+						print('comantToExecute -----> ',commandToExecute)
+						print('listSearchValues ----> ',listSearchValues)
+					self.cur.execute(commandToExecute, listSearchValues)
 		elif selectCustomFromAllColumns == True:
 			if isinstance(listColumnNames[0], list):
 				listColumnNames = listColumnNames[0]
@@ -619,14 +635,19 @@ def downloadCSV(url):
 	#this function download csv and seperate headers if such are there
 	rawData = []
 
-	extractedIP = url.replace('https://', "")#remove set of char's before ip
+	extractedIP = None
+	if 'http://' in url: extractedIP = url.replace('http://', "")#remove set of char's before ip
+	elif 'https://' in url: extractedIP = url.replace('https://', "")
 	frstForwSlashID = extractedIP.index('/')
 	extractedIP = extractedIP[:frstForwSlashID]#remove char's after ip
 	workingDirectory = './application/wgetFile' #directory where to execute
 	wgetExe = 'wget.exe'
 	argument1 = '--no-check-certificate'
 	argument2 = '-t1'
-	argument3 = '--referer=https://' + extractedIP + '/Portal/Portal.mwsl?PriNav=FileBrowser'
+
+	argument3 = None
+	if 'http://' in url: argument3 = '--referer=http://' + extractedIP + '/Portal/Portal.mwsl?PriNav=FileBrowser'
+	elif 'https://' in url: argument3 = '--referer=https://' + extractedIP + '/Portal/Portal.mwsl?PriNav=FileBrowser'
 
 	#-------------check for additional csv files in directory and create new unique name----------------------------------------
 	randIdentificator = ""
@@ -793,7 +814,7 @@ def checkAllUserDatabases():
 			for tableUrlRaw in databaseData_usrUrl:
 				table = tableUrlRaw[0]
 				url = tableUrlRaw[1]
-				print(print(table, url))
+				#print(table, url)
 				currentTableData, currentTableNames = downloadCSV(url)
 				#print(currentTableData)
 				#print(len(currentTableData))
@@ -849,7 +870,7 @@ def updateUserTables(usrDBname):
 		for tableUrlRaw in databaseData_usrUrl:
 			table = tableUrlRaw[0]
 			url = tableUrlRaw[1]
-			print(print(table, url))
+			#print(print(table, url))
 			currentTableData, currentTableNames = downloadCSV(url)
 			if currentTableData == None:
 				#print('------Download has failed-----',usrDBname, table )
@@ -884,7 +905,7 @@ def createUser(dbName, nameOfTable, userDataList):
 	conn = sqlite3.connect(rsinfo.db)
 	c = conn.cursor()
 	nameOfTable = 'userInfo'
-	#----------------- funkcija jāpabeidz (nočekot vai user jau nav reģistrēts; info ievietošana string no list variable)
+	#----------------- funkcija japabeidz (nocekot vai user jau nav registrets; info ievietosna string no list variable)
 	valuesString = 'testuser, password, yes, testUserTable1'
 	stringsToJoin = ("insert into", nameOfTable, "(username, pasword, license, userTables)", "values", "(", valuesString, ")")
 	commandToExecute = " ".join(stringsToJoin)

@@ -66,9 +66,10 @@ def signup():
                 name=form.name.data,
                 #created=datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                 created=datetime.now(),
-				database=databaseName,
-				isAdmin = 0,
-				isActive = 1
+		database=databaseName,
+		isAdmin = 0,
+		isActive = 1,
+		language = 'latvian'
             )
             user.set_password(form.password.data)
             db.session.add(user)

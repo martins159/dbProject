@@ -99,10 +99,26 @@ def recordsTab():
 	if customFunctions.compareTimeDifference(current_user.lastLogin,timePeriodSeconds = 3600) == True:
 		current_user.lastLogin = datetime.datetime.now()#register login time
 		db.session.commit()
-	
+	#products = fetch_products(app)
+	#from .. import dbconn
+	msg = None
+	data = None
+	info = None
+
+	userToEdit = User.query.filter_by(username=current_user.username).first()
+	userConnected = dbconn.user()
+        #--------------------------get texts in current users language----------------------------------------------
+	language = str(current_user.language)
+	userConnected.connectToDB('lang')
+	textFromCols = ['1']
+	textsRaw = userConnected.selectData('texts', listColumnNames = ['lang'], listColsToRecieve = textFromCols,
+                                        listSearchValues = [language], listOperators = ['='])
+	texts = {'%s'%textFromCols[n] : '%s'%textsRaw[0][n] for n in range(len(textFromCols))}
+
 	customPresent = request.args.get('customRecords') # None type if not existing
 	if customPresent != None:
-		try:
+		a = True
+		if a == True:
 			userData = userDataSelectedData[customPresent]
 			userDataSelectedData.pop(customPresent)#remove data from dict to save memory
 			tableInfo = userData[0]
@@ -124,29 +140,22 @@ def recordsTab():
 			for word in columnNames:
 				columnNamesWithoutSpaces.append(word.replace(" ",""))
 			colNamesExport = []
-			for (titleName,fieldName) in zip(columnNames,columnNamesWithoutSpaces):
+			for (titleName,fieldName) in zip(columnNames,columnNames):
 				if fieldName == 'Date':
 					#this is only for Date column, statement could be deleted in future.  Or modified.
 					colNamesExport.append({'title':titleName, 'field':fieldName, 'minWidth':300})
 				else:
 					colNamesExport.append({'title':titleName, 'field':fieldName, 'minWidth':100})
+			print('col names------------->',colNamesExport)
 			table =  request.args.get('table')
 			session['currentTable'] = table
 			return render_template(
 			'recordsTab.html',
-			userLevel = userLevel,
+			userLevel = userLevel, texts = texts,
 			tableData = variable, columnNames = columnNames, colNamesExport = colNamesExport,  currTable = table, username = current_user.username
 			)
-		except: print('customRecords is present but data not')
-	
-    #products = fetch_products(app)
-	from .. import dbconn
-	msg = None
-	data = None
-	info = None
-	
-	userToEdit = User.query.filter_by(username=current_user.username).first()
-	userConnected = dbconn.user()
+		else: print('customRecords is present but data not')
+
 	userConnected.connectToDB(userToEdit.database)
 	databaseTables = userConnected.getDatabaseTables()
 	for item in tablesToFilterWholeName: databaseTables.remove(item)#remove unwanted tables
@@ -185,8 +194,6 @@ def recordsTab():
 				colNamesExport.append({'title':columnNames[loop], 'field':columnNames[loop], 'minWidth':100})
 			else:
 				colNamesExport.append({'title':columnNames[loop], 'field':columnNames[loop]})
-		
-		
 		userConnected.conn.close()
 
 		if request.method == "POST":
@@ -208,7 +215,7 @@ def recordsTab():
 		if current_user.isActive == 1:
 			return render_template(
 			'recordsTab.html',
-			userLevel = userLevel, tableData = variable, columnNames = columnNames, colNamesExport = colNamesExport, currTable = databaseTables[0], username = current_user.username
+			userLevel = userLevel, texts = texts, tableData = variable, columnNames = columnNames, colNamesExport = colNamesExport, currTable = databaseTables[0], username = current_user.username
 			)
 		else:
 			return redirect(url_for('auth_bp.logout'))
@@ -217,7 +224,7 @@ def recordsTab():
 		if current_user.isActive == 1:
 			return render_template(
 			'recordsTab.html',
-			userLevel = userLevel, tableData = [], columnNames = [], colNamesExport = [], currTable = "No table is created yet", username = current_user.username
+			userLevel = userLevel, texts = texts, tableData = [], columnNames = [], colNamesExport = [], currTable = "No table is created yet", username = current_user.username
 			)
 		else:
 			return redirect(url_for('auth_bp.logout'))
@@ -259,8 +266,11 @@ def requesReturn():
 	recievedData = request.get_json()
 	username = request.args.get('username')#username to identify database
 	table = request.args.get('table')
-	print("---------------------searchNewRequestData function --------------------------------------")
-	print("----recievedData----->",recievedData)
+	#specialCase = None
+	specialCase = request.args.get('specialCase')
+	#print('---------------requesReturnTable------------->', table)
+	#print("---------------------searchNewRequestData function --------------------------------------")
+	#print("----recievedData----->",recievedData)
 	#print(recievedData)
 	if len(recievedData) > 0:
 		colNamesList = []
@@ -273,20 +283,21 @@ def requesReturn():
 			colNamesList.append(recievedData[row]['columnName'])
 			operatorList.append(recievedData[row]['operator'])
 			filterValueList.append(recievedData[row]['filterValue'])
-		#check for dates in filter values
-		#for item in filterValueList:
-		#	if customFunctions.is_date(item) == True:
-		#		print("------------this is date---------->", item)
-		#	else: print("------------------this is not date----------->", item)
+
 		userToEdit = User.query.filter_by(username=username).first()
 		userConnected = dbconn.user()
 		userConnected.connectToDB(userToEdit.database)
-		
-		selectedData = userConnected.selectData(table, listColumnNames = colNamesList, listSearchValues = filterValueList, listOperators = operatorList, selectCustomFromAllColumns = True, printOnConsole = False)
+		selectedData = None
+		if specialCase == None:
+			selectedData = userConnected.selectData(table, listColumnNames = colNamesList, listSearchValues = filterValueList, listOperators = operatorList, selectCustomFromAllColumns = True, printOnConsole = False, selectDescending = True)
+		else:
+			print('specialCase active ----------------------->!!!!!!!!!!')
+			selectedData = userConnected.selectData(table, recordsLimit = 50, selectAll = True,selectDescending = True, printOnConsole = False)
 		tableData = userConnected.getTableInfo(table)
+		print('selected data from database ---------------->',tableData)
 		global userDataSelectedData
 		userDataSelectedData[username] = [tableData, selectedData]
-		#print(userDataSelectedData)
+		print('--------------userDataSelectedData------------------>',userDataSelectedData)
 		userConnected.conn.close()#close sqlite connection
 	return jsonify({
 			"info"   :  "no_errors",
