@@ -246,7 +246,7 @@ class user(object):
 		#print(dataToExport)
 		stringsToJoin = ("INSERT INTO ", nameOfTable, " ", colNamesToExport , " VALUES (", dataToExport, " )")
 		commandToExecute = "".join(stringsToJoin)
-		#print(commandToExecute)
+		print(commandToExecute)
 		self.cur.execute(commandToExecute)
 		#print('line writtent to ', nameOfTable)
 		#self.cur.execute("INSERT INTO rsTrade VALUES ('28.07.2019','Cannonballs',29999,471,496,749975,0.7499)")
@@ -368,11 +368,14 @@ class user(object):
 			tableInfo = self.getTableInfo(nameOfTable)#get table info    <<<-----------------------------------------------
 			dataToExport = ""
 			colNamesToExport = ""
+			#print(listSearchValues)
 			for loop in range(len(listSearchValues)):
 				#find right column data, to know if '' had to be used
 				currentColData = None
-				if listColumnNames[loop] == 'rowid':
-					currentColData = [" "," "," "]#just assign something as we want just to skip text part and to not cause error of NONE type
+				if listColumnNames[loop] == '':
+					currentColData = [" "," "," "] #just assign something as we want just to skip text part and to not cause error of NONE type
+				elif listColumnNames[loop] == 'rowid': #pieliku atpakal
+					currentColData = [" "," "," "]
 				else:
 					for item in tableInfo:
 						if item[1] == listColumnNames[loop]:
@@ -829,10 +832,8 @@ def checkAllUserDatabases():
 				isUpdated = None
 				updateCount = None
 				print('------------table name is: ', table)
-				#if any(name in table for name in tablesToFilterPartialName):
-				#	isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True, specificCase1 = 0)#perform data update
-				#else:
-				#	isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True, reverse = True)
+				#check for faulty data
+				newValueListExport = faultyDataCheck(newValueListExport, currentTableNames, userConnected.getTableInfo(table))
 				isUpdated, updateCount = userConnected.updateTableUniqueRecords(table, newValueListExport,  reportUpdateCount = True, specificCase1 = 0)
 				if isUpdated == True:
 					userConnected.countAllRecords(table, operator = '-', value = updateCount)
@@ -967,3 +968,60 @@ def isSQLite3(filename):
 		header = fd.read(100)
 	#print('------->  ', header[:16])
 	return header[:16] == b'SQLite format 3\x00'
+
+def faultyDataCheck(newValueListExport, currentTableNames, tableInfo):
+	#---------------------------workaround if data does not mach column names-------------------------------------------------------
+	#in case if data list is shorter than column name list necesary data is added to avoid error
+	#		 if data list is longer, extra data is cut off
+	for line in range(len(newValueListExport)):
+			if len(newValueListExport[line]) == len(currentTableNames): continue
+			elif  len(newValueListExport[line]) < len(currentTableNames):
+					print('---------------------------!!!WARNING!!!-------------------------------')
+					print('column names list does not mach data list')
+					print('data list len ----->', len(newValueListExport[line]))
+					print('column len ----->', len(currentTableNames))
+					#tableInfo = userConnected.getTableInfo(table)
+					countOfMissingData = len(currentTableNames) - len(newValueListExport[line])
+					#add missing data
+					lastIndex = len(newValueListExport[line]) - 1
+					for loop in range(countOfMissingData):
+							curIndex = lastIndex + loop
+							dataType = tableInfo[curIndex][2]
+							if dataType == 'STRING' or 'string' or 'text':
+									newValueListExport[line].append("'No data'")
+							elif dataType == 'INTEGER' or 'integer':
+									newValueListExport[line].append(0)
+							elif dataType == 'REAL' or 'real':
+									newValueListExport[line].append(0.0)
+					for item in range(len(newValueListExport[line])):
+							if newValueListExport[line][item] == "": newValueListExport[line][item] = "''"
+							elif str(tableInfo[item][2]) == 'text':
+									#print('patreizejais items:       ',newValueListExport[line][item])
+									#print('table info:  ', tableInfo[item][2])
+									if "'" in newValueListExport[line][item]: pass
+									else:
+											newStr = "'" + newValueListExport[line][item] + "'"
+											newValueListExport[line][item] = newStr
+							elif tableInfo[item][2] == 'integer':
+									if isinstance(newValueListExport[line][item], int): pass
+									else: newValueListExport[line][item] = 0
+			elif len(newValueListExport[line]) > len(currentTableNames):
+					print('---------------------------!!!WARNING!!!-------------------------------')
+					print('column names list does not mach data list')
+					print('data list len ----->', len(newValueListExport[line]))
+					print('column len ----->', len(currentTableNames))
+					#tableInfo = userConnected.getTableInfo(table)
+					countOfExtraData = len(newValueListExport[line]) - len(currentTableNames)
+					for loop in range(countOfExtraData):
+							newValueListExport[line].pop(-1) #delete last item
+					for item in range(len(newValueListExport[line])):
+							if newValueListExport[line][item] == "": newValueListExport[line][item] = "''"
+							elif tableInfo[item][2] == 'text':
+									word = newValueListExport[line][item]
+									word.replace("'", "")
+									newStr = "'" + word + "'"
+									newValueListExport[line][item] = newStr
+							elif tableInfo[item][2] == 'integer':
+									if isinstance(newValueListExport[line][item], int): pass
+									else: newValueListExport[line][item] = 0
+	return newValueListExport

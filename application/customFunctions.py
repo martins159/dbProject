@@ -66,12 +66,16 @@ def changeDateFormat(itemList):
 	
 	for currlist in range(len(itemList)):
 		for index in dateItemsIndexes:
-			#print("------------------itemList[currlist][index]----------------->",itemList[currlist][index])
-			item = datetime.strptime(itemList[currlist][index], '%m/%d/%Y')
-			#item = datetime.strptime(itemList[currlist][index], '%d/%m/%Y')
-
-			newList[currlist][index] = item.strftime('%Y-%m-%d')
-		
+			try:
+				#print("------------------itemList[currlist][index]----------------->",itemList[currlist][index])
+				item = datetime.strptime(itemList[currlist][index], '%m/%d/%Y')
+				#item = datetime.strptime(itemList[currlist][index], '%d/%m/%Y')
+				newList[currlist][index] = item.strftime('%Y-%m-%d')
+			except:
+				print('-------------------------->>>>-------------does not match format--<<<<------------------------------')
+				print('item at index: ', itemList[currlist][index])
+				print('index: ', index)
+				print('liste: ', itemList[currlist])
 	return newList
 
 def isInt(s):

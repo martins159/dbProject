@@ -317,7 +317,7 @@ def updateTableUrl():
 		return jsonify({
 			"info"   :  "Data got succesfully!"
 		})
-	elif username != None and table == None:# download data from specified urls and update table
+	elif username != None and table == None: # download data from specified urls and update table
 		userToEdit = User.query.filter_by(username=username).first()
 		userConnected = dbconn.user()
 		userConnected.connectToDB(userToEdit.database)
@@ -325,32 +325,23 @@ def updateTableUrl():
 		tablesUpdated = 0
 		for item in selectedData:
 			currentTableData, currentTableNames = dbconn.downloadCSV(item[1])
-			tableInfoRaw = userConnected.getTableInfo(item[0]) #get info about table from database 
-			dataRowLenght = len(currentTableData[0])
-			for loop in range(dataRowLenght):
-				isFloat = customFunctions.isFloat(currentTableData[0][loop])
-				if isFloat == False and (tableInfoRaw[loop][2] == 'integer' or tableInfoRaw[loop][2] == 'real'):
-					reportString = "Table update aborted. Downloaded data datatypes does not mach - expected integer or float but got text . Problem found at column with name: '" + tableInfoRaw[loop][1] + "' "
-					return jsonify({
-                                                "info"   :  reportString
-						})
-				else:
-					continue
+			#print(currentTableData)
+			#change date formats
 			newValueListExport = customFunctions.changeDateFormat(currentTableData)
-			isUpdated = None
+			#print(newValueListExport)
+			isUpdated = False
 			#if any(name in item[0] for name in tablesToFilterPartialName):
-			#	isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, specificCase1 = 0) #perform data update
+			#	isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, specificCase1 = 0)
 			#else:
-			#	isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport)
-			isUpdated = userConnected.updateTableUniqueRecords(table, newValueListExport, specificCase1 = 0)
+			#	isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport) #perform data update
+			newValueListExport = dbconn.faultyDataCheck(newValueListExport, currentTableNames, userConnected.getTableInfo(item[0]))
+			isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, specificCase1 = 0)
 			if isUpdated == True: tablesUpdated += 1
-		import os
-		cwd = os.getcwd()
-		#print('------------------>current directory out of funct: ', cwd)
 		reportString = str(tablesUpdated) + " tables updated. "
 		return jsonify({
 			"info"   :  reportString
 		})
+
 	url = request.get_json()
 	#url = request.args.get('url')
 	userToEdit = User.query.filter_by(username=username).first()

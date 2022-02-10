@@ -205,6 +205,7 @@ def recordsTab():
 					#print("----------> value of 'v': ", v)
 					#print(type(v[0]))#liste kas sastāv no dictionary elementiem
 					session['dic']=v[0]
+					print(session['dic'])
 					#return redirect(url_for('records_bp.pdfConfig'))
 					return jsonify({
 						"info"   :  "success"
@@ -366,11 +367,12 @@ def userupdateTableUrl():
 			newValueListExport = customFunctions.changeDateFormat(currentTableData)
 			#print(newValueListExport)
 			isUpdated = False
-			#if any(name in item[0] for name in tablesToFilterPartialName):
-			#	isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, specificCase1 = 0)
-			#else:
-			#	isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport) #perform data update
+			
+			#check data faulty data
+			newValueListExport = dbconn.faultyDataCheck(newValueListExport, currentTableNames, userConnected.getTableInfo(item[0]))
+
 			isUpdated = userConnected.updateTableUniqueRecords(item[0], newValueListExport, specificCase1 = 0)
+ 
 			if isUpdated == True: tablesUpdated += 1
 		reportString = str(tablesUpdated) + " tables updated. "
 		return jsonify({
@@ -419,8 +421,10 @@ def pdfConfig():
 
 	#print('-------------------esmute-----------------')
 	pdfParamsDict = session['dic']
-	#print(pdfParamsDict)
+	print(pdfParamsDict.items())
 	for key,value in pdfParamsDict.items():
+		#print(key)
+		#print(value)
 		if key == '1':
 			key = str(databaseData_txt[-1][0]) #'Cikla Nr.:'
 			session["TitlePDF"] = value
@@ -519,8 +523,11 @@ def pdfConfig():
 			key = str(databaseData_txt[-1][2]) #'Cikla beigu laiks:'
 			idNumber = 3
 			cycleUTCTime = value
-		elif key == 'id':
-			key = str(databaseData_txt[-1][28]) #'Datubāzes id numurs:'
+		#elif key == 'id':
+		#	key = str(databaseData_txt[-1][29]) #'Datubāzes id numurs:'
+		#	idNumber = 29
+		elif key == '26':
+			key = str(databaseData_txt[-1][28]) #šeit būs jāpaštuko, 26 elements, varbūt break ir jāizņem 26.01.2022
 			idNumber = 29
 		else:
 			break
@@ -529,6 +536,7 @@ def pdfConfig():
 		if strReplace in strValue:
 			strValue = strValue.replace('"','')
 		paramsListExport.append({'1':key,'2':strValue,'3':idNumber})
+		
 	#graphTag =str( databaseData_txt[-1][32])
 
 	userConnected_txt.conn.close()
@@ -820,11 +828,11 @@ def autoclave_pdf():
 				dictKey, dictVal = list(pdfDataValueDict.items())[0]
 				pdf.texts(dictKey,20,207,60,17)
 				pdf.texts(dictVal,160,207,60,17)
-			#elif pdfDataKey == '29':
-			#	pdfDataValueDict = ast.literal_eval(pdfDataValue)
-			#	dictKey, dictVal = list(pdfDataValueDict.items())[0]
-			#	pdf.texts(dictKey,20,213,60,17)
-			#	pdf.texts(dictVal,160,213,60,17)
+			elif pdfDataKey == '29':
+				pdfDataValueDict = ast.literal_eval(pdfDataValue)
+				dictKey, dictVal = list(pdfDataValueDict.items())[0]
+				pdf.texts(dictKey,20,213,60,17)
+				pdf.texts(dictVal,160,213,60,17)
 
 	pdf.set_fill_color(int(databaseData_pdf[-1][32]),int(databaseData_pdf[-1][33]),int(databaseData_pdf[-1][34]))
 	pdf.rect(0,287,210,297,style = 'F')
